@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Weather</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+  
+  <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'>
+<link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css'>
+<link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.css'>
+<link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+<link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.css'>
+<link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons-wind.css'>
+
+      <link rel="stylesheet" href="css/style.css">
+
+  
+</head>
+
+<body>
+  <div class="container-fluid">
+
+
+  <div class="frame">
+   
+    <div class="back"><img src="" class="img-responsive main-back" /></div>
+    <div class="head">
+    </div>
+    <div class="wrapper">
+      <div class="weather-container">
+        <div class="offset"></div>
+
+        <div class="layer-1 animated">
+          <div class="w2">
+            <i id="main-loc" class="main-icon fn fa fa-map-marker"></i>
+            <div id="loc-d" class="sub2 animated">
+              <p class="inline3 animated" id="loc"></p>
+            </div>
+            <div id="loc-info-d" class="sub2 in animated">
+              <p class="inline animated" id="loc-info">location info</p>
+            </div>
+
+          </div>
+          <div class="w2">
+            <i id="icon2" class="main-icon fn wi "></i>
+            <div id="des-d" class="sub2 animated">
+              <p class="inline3 animated" id="des"></p>
+            </div>
+            <div id="cloud-info-d" class="sub2 in animated">
+              <p class="inline animated" id="cloud-info">cloud info</p>
+            </div>
+          </div>
+          <div class="w2">
+            <i id="main-temp" class="main-icon fn fa"></i>
+            <i id="unit-icon" class=" wi wi-celsius"></i>
+            <div id="temp-d" class="sub2 animated">
+              <p class="inline2" id="temp"></p>
+            </div>
+            <div id="temp-info-d" class="sub2 in animated">
+              <p class="inline" id="temp-info">temp info</p>
+            </div>
+          </div>
+
+        </div>
+        <div class="layer-2 animated">
+          <div class="w2">
+            <i id="main-humid" class="main-icon fb wi wi-humidity"></i>
+            <div id="humid-d" class="sub2 animated">
+              <p class="inline-main animated" id="humid"></p>
+            </div>
+            <div id="humid-info-d" class="sub2 in animated">
+              <p class="inline animated" id="humid-info">humid info</p>
+            </div>
+
+          </div>
+          <div class="w2 wd">
+
+            <i id="main-wind" class="main-icon fb wi wi-strong-wind animated" style="border:none"></i>
+
+            <div id="wind-d" class="sub2 animated">
+              <p class="inline-main animated" id="wind"></p>
+            </div>
+            <div id="wind-info-d" class="sub2 in animated">
+              <p class="inline animated" id="wind-info">wind info</p>
+            </div>
+
+          </div>
+          <!--<div class="w2" style="
+    overflow: visible"><i id="wind-dir" class="main-icon fb wind-r animated wi wi-wind"></i></div> -->
+
+        </div>
+
+
+      </div>
+
+      <div class="refresh">
+        <p><i id="refresh" class="fa fa-refresh"></i></p>
+        <div>
+        </div>
+
+      </div>
+      <div class="footer">
+        <p>Created by <a href="#">Supun Manathunga</a></p>
+        <div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+</div>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
+
+    <script src="js/index.js"></script>
+
+</body>
+</html>
