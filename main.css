@@ -1,0 +1,12 @@
+body{
+    font-family: 'Raleway', sans-serif;
+    background-image:url("http://hdimages.org/wp-content/uploads/2016/11/html-background-image-HD2.jpg");
+    background-attachment: fixed;
+    color:rgba(204, 202, 202, 0.99);
+}
+.pad{
+    padding-top: 70px;
+}
+.sec{
+    margin-bottom: 20px;
+}
