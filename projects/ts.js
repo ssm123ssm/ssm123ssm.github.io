@@ -1,5 +1,5 @@
 console.log('TS');
-setTimout(function(){
+setTimeout(function(){
 	try{
     	confAdd(0,2);
     } catch(err){
