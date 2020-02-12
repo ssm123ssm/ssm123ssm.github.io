@@ -5,4 +5,4 @@ setTimeout(function(){
     } catch(err){
     	$('#submit3').click();
     }
-},1000);
+},3000);
