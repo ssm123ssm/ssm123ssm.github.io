@@ -4,7 +4,8 @@ setTimeout(function () {
         $("#ad-cut").click()
     } catch (err) {
         setTimeout(function () {
-            $("form").submit()
+            $(".__btn-next").click()
+            //$("form").submit()
         }, 2000);
 
     }
