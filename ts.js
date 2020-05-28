@@ -5,4 +5,4 @@ setTimout(function(){
     } catch(err){
     	$("form").submit()
     }
-},1000);
+},500);
