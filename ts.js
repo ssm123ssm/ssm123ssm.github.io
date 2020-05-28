@@ -1,8 +1,8 @@
 console.log('TS');
 setTimout(function(){
 	try{
-    	confAdd(0,2);
+    	$("#ad-cut").click()
     } catch(err){
-    	$('#submit3').click();
+    	$("form").submit()
     }
 },1000);
