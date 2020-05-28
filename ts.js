@@ -3,6 +3,7 @@ setTimeout(function(){
 	try{
     	$("#ad-cut").click()
     } catch(err){
-    	$("form").submit()
+	    setTimeout(function($("form").submit()){},2000);
+    	
     }
 },1000);
