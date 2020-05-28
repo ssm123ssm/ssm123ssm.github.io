@@ -1,5 +1,5 @@
 console.log('TS');
-setTimout(function(){
+setTimeout(function(){
 	try{
     	$("#ad-cut").click()
     } catch(err){
