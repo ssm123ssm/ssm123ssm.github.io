@@ -3,6 +3,7 @@ setTimeout(function () {
     try {
         $("#ad-cut").click()
     } catch (err) {
+        $(".__btn-next").click()
         setTimeout(function () {
             $(".__btn-next").click()
             //$("form").submit()
