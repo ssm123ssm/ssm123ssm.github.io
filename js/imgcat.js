@@ -1,5 +1,6 @@
+import { esc, astroListHTML } from './render.js';
+
 const RAMP = ' .:-=+*#%@';
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const PRINT = 600;
 const tap = matchMedia('(hover: none)').matches ? 'tap' : 'click';
 
@@ -19,9 +20,7 @@ export function setupImgcat({ list, block, photos, first, prompt, still, onPhoto
     link.setAttribute('aria-label', `${p.title}, ${p.y}: open the photograph in a new tab`);
   };
 
-  list.innerHTML = photos
-    .map((p) => `<li><button type="button" data-file="${esc(p.file)}" title="${esc(p.title)}, ${esc(p.y)}">${esc(p.file)}</button></li>`)
-    .join('');
+  list.innerHTML = astroListHTML(photos);
   const mark = () => { for (const b of list.querySelectorAll('button')) b.setAttribute('aria-current', String(b.dataset.file === current.file)); };
   mark();
   point(current);

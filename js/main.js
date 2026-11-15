@@ -6,81 +6,26 @@ import { buildWorld, buildPosterior, buildSwissRoll, buildBloodCells } from './p
 import { playSession, typeOnArrival } from './session.js';
 import { setupMail } from './mail.js';
 import { setupImgcat } from './imgcat.js';
-import { profile, spotlight, stages, stageShell, commands, filterNote, sirNote, themes, pubs, tagNames, projects, awards, contact, astro } from './content.js';
+import { profile, stages, stageShell, commands, contact, astro, sirNote, filterNote } from './content.js';
+import { esc, contentHTML, pubsHTML } from './render.js';
 
 const $ = (id) => document.getElementById(id);
 const PAPERS = 2;
 let paperTag = 'all', sceneIndex = 0;
 let shell = null;
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const ext = (url, label) => `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(label)}</a>`;
 
 function renderContent() {
-  const cols = Math.max(...profile.banner.map((r) => r.length));
-  $('name').innerHTML = `<span class="sr-only">${esc(profile.name)}</span>` +
-    `<span class="banner" aria-hidden="true" style="--cols:${cols}">` +
-    profile.banner.map((r) => `<span>${esc(r)}</span>`).join('') + '</span>';
-  $('line').textContent = profile.line;
-  const links = profile.links.map((l) => ext(l.url, l.label)).join('');
-  $('links2').innerHTML = links;
-
-  const sp = spotlight;
-  $('spot').innerHTML =
-    `<p class="tag">${esc(sp.label)}</p><h2 class="spot-title">${esc(sp.title)}</h2>` +
-    `<p class="m">${esc(sp.authors)}<br>${esc(sp.venue)}</p>` +
-    (sp.prize ? `<p class="prize"><span class="mark" aria-hidden="true">*</span>${ext(sp.prize.url, sp.prize.label)}<br><span class="m">${esc(sp.prize.note)}</span></p>` : '') +
-    `<p>${esc(sp.text)}</p>` +
-    `<p class="links">${sp.links.map((l) => ext(l.url, l.label)).join('')}</p>`;
-
-  const note = (n) => `<span class="fig-text">${esc(n.text)}${n.touch ? ' ' + esc(n.touch) : ''}</span> ${n.links.map((l) => ext(l.url, l.label)).join(' ')}`;
-  $('filterNote').innerHTML = note(filterNote);
-  $('sirNote').innerHTML = note(sirNote);
-
-  $('themes').innerHTML = themes
-    .map((t) => `<div class="theme"><h3>${esc(t.title)}</h3>${t.fields ? `<p class="fields">${t.fields.map(esc).join(' / ')}</p>` : ''}<p>${esc(t.text)}</p></div>`)
-    .join('');
-
-  const tags = ['all', ...new Set(pubs.map((p) => p.tag))];
-  $('filters').innerHTML = tags
-    .map((t) => `<button type="button" data-tag="${t}" aria-pressed="${t === 'all'}">${esc(tagNames[t] || t)}</button>`)
-    .join('');
-  const drawPubs = (tag) => {
-    $('pubs').innerHTML = pubs
-      .filter((p) => tag === 'all' || p.tag === tag)
-      .map((p) => {
-        const url = p.url || `https://scholar.google.com/scholar?q=${encodeURIComponent('"' + p.t + '"')}`;
-        const c = p.cites ? ` / <span class="c">cited ${p.cites}</span>` : '';
-        return `<li><span class="y">${p.y}</span><div><a class="t" href="${esc(url)}" target="_blank" rel="noopener">${esc(p.t)}</a><span class="m">${esc(p.a)}<br>${esc(p.v)}${c}</span></div></li>`;
-      })
-      .join('');
-  };
-  drawPubs('all');
+  for (const [id, html] of Object.entries(contentHTML())) $(id).innerHTML = html;
+  setupMail($('mailForm'), $('mailStatus'), contact);
   $('filters').addEventListener('click', (ev) => {
     const b = ev.target.closest('button');
     if (!b) return;
     for (const x of $('filters').children) x.setAttribute('aria-pressed', x === b);
-    drawPubs(b.dataset.tag);
+    $('pubs').innerHTML = pubsHTML(b.dataset.tag);
     paperTag = b.dataset.tag;
     shell?.retype('papers', commands.papers + (paperTag === 'all' ? '' : paperTag + '/'));
     if (sceneIndex === PAPERS) setScene(PAPERS);
   });
-
-  $('projectList').innerHTML = projects
-    .map((p) => {
-      const go = [p.live && ext(p.live, 'Live site'), p.code && ext(p.code, 'Source'), ...(p.links || []).map((l) => ext(l.url, l.label))].filter(Boolean).join('');
-      return `<li><div class="head"><h3>${esc(p.name)}</h3><span class="stack">${esc(p.stack)}</span></div><p>${esc(p.text)}</p><div class="go links">${go}</div></li>`;
-    })
-    .join('');
-
-  $('awardList').innerHTML = awards
-    .map((a) => `<li><span class="y">${esc(a.y)}</span><div>${a.url ? `<a class="t" href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.name)}</a>` : `<span class="t">${esc(a.name)}</span>`}<span class="m">${esc(a.by)}</span></div></li>`)
-    .join('');
-
-  $('aboutText').innerHTML = esc(profile.about).replace('{lab}', ext(profile.lab.url, profile.lab.label));
-  $('background').textContent = profile.background;
-  $('mailIntro').textContent = contact.intro;
-  setupMail($('mailForm'), $('mailStatus'), contact);
-  $('hobby').innerHTML = esc(profile.hobby).replace(/\{([^}]+)\}/, '<a href="#astro">$1</a>');
 }
 renderContent();
 
