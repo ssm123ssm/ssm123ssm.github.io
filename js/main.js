@@ -9,12 +9,16 @@ import { setupImgcat } from './imgcat.js';
 import { profile, stages, stageShell, commands, contact, astro, sirNote, filterNote } from './content.js';
 import { esc, contentHTML, pubsHTML } from './render.js';
 
+// ------------------------------------------------------------ content
 const $ = (id) => document.getElementById(id);
-const PAPERS = 2;
-let paperTag = 'all', sceneIndex = 0;
-let shell = null;
+const firstSection = document.querySelector('section[data-scene]');
+const filterOpensPage = firstSection.id === 'top';
+const PAPERS = 2; // the Papers section's scene index
+let paperTag = 'all', sceneIndex = Number(firstSection.dataset.scene); // the papers tab shown, and which section owns the scene
+let shell = null; // the later sections' commands (see the end of this file)
 
 function renderContent() {
+  // the content (render.js; index.html already carries it when built by tools/build.mjs)
   for (const [id, html] of Object.entries(contentHTML())) $(id).innerHTML = html;
   setupMail($('mailForm'), $('mailStatus'), contact);
   $('filters').addEventListener('click', (ev) => {
@@ -22,19 +26,21 @@ function renderContent() {
     if (!b) return;
     for (const x of $('filters').children) x.setAttribute('aria-pressed', x === b);
     $('pubs').innerHTML = pubsHTML(b.dataset.tag);
-    paperTag = b.dataset.tag;
+    paperTag = b.dataset.tag; // fig. 3 follows the tab
     shell?.retype('papers', commands.papers + (paperTag === 'all' ? '' : paperTag + '/'));
     if (sceneIndex === PAPERS) setScene(PAPERS);
   });
 }
 renderContent();
 
-const pres = document.querySelectorAll('#scene pre');
-const PRE_LAYER = [2, 0, 1, 3, 4, 5, 6, 7, 8];
+// ------------------------------------------------------------ scene
+const pres = document.querySelectorAll('#scene pre'); // dim, base, accent, then the photo hues
+const PRE_LAYER = [2, 0, 1, 3, 4, 5, 6, 7, 8]; // the renderer's layer each <pre> shows
 const captionEl = $('caption');
 const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const R = new Renderer();
 const shapes = [buildCondense(), buildSpread(), buildVirion(), buildCube(), buildNightSky()];
+// The Papers section (scene 2, fig. 3) shows a different scene for each topic tab.
 const paperScenes = {
   all: buildWorld(),
   epi: shapes[2],
@@ -46,14 +52,16 @@ const sceneFor = (i) => (i === PAPERS ? paperScenes[paperTag] || shapes[i] : sha
 const hero = shapes[0];
 const scratch = makeShape();
 
-let A = shapes[0], B = shapes[0], e = 1;
+let A = shapes[sceneIndex], B = A, e = 1;
 let t = 0, last = 0, raf = 0;
 let cw = 7, chh = 14, wide = true;
 let mx = 0, my = 0, smx = 0, smy = 0;
 let dragYaw = 0, dragPitch = 0, dragging = false, relax = false, lastX = 0, lastY = 0;
-let press = null, dragMoved = false;
+let press = null, dragMoved = false; // where the current press began; whether it has become a drag
 const cur = { yaw: 0, pitch: 0.25, zoom: 1 };
 
+// The fixed banner: the nav's height and where the banner ends, for the layout (CSS) and for
+// the hero's scroll track. With the banner not fixed (phones, short screens), only the nav is.
 const navEl = document.querySelector('.nav'), barEl = $('motd');
 let motd = 0;
 function measureBar() {
@@ -62,43 +70,49 @@ function measureBar() {
   document.documentElement.style.setProperty('--nav-h', navH + 'px');
   document.documentElement.style.setProperty('--motd', motd + 'px');
 }
-const sceneEl = $('scene'), track = $('top');
-const winOf = new Map([...document.querySelectorAll('section[data-scene]')].map((s) => [s, s.querySelector('.fig-window')]));
-let host = track;
+// Phones share one sticky figure. Its scene follows the section entering the
+// reading area just below it. Wide screens draw the same scene beside the text.
+const sceneEl = $('scene'), track = $('top'), mobileFigure = $('mobileFigure');
+const sections = [...document.querySelectorAll('section[data-scene]')];
+// Adjacent sections can share a figure. A new appearance later in the page
+// gets the next number, including a return to an earlier scene.
+const figureNumbers = new Map();
+let figureNumber = 1;
+sections.forEach((section, i) => {
+  if (i && section.dataset.scene !== sections[i - 1].dataset.scene) figureNumber++;
+  figureNumbers.set(section, figureNumber);
+});
+figureNumber = 1;
+const navLinks = [...document.querySelectorAll('.nav nav a')];
 const CAPTION_STRIP = 20;
 function placeScene() {
-  const into = wide ? null : winOf.get(host);
-  if (into) { if (sceneEl.parentNode !== into) into.append(sceneEl, captionEl); }
-  else if (sceneEl.parentNode !== document.body) { document.body.prepend(sceneEl); document.body.append(captionEl); }
-}
-function shown(sec) {
-  const w = winOf.get(sec);
-  if (!w.offsetHeight) return -1;
-  const r = w.getBoundingClientRect();
-  return Math.min(r.bottom, innerHeight) - Math.max(r.top, 0);
+  if (!wide) {
+    if (sceneEl.parentNode !== mobileFigure) mobileFigure.append(sceneEl, captionEl);
+  } else if (sceneEl.parentNode !== document.body) {
+    document.body.prepend(sceneEl);
+    document.body.append(captionEl);
+  }
 }
 const dust = makeShape();
 {
   const rnd = rng32(7);
+  // wider than the window, so much of it flies in from outside; faint, so it reads as loose dots
   for (let i = 0; i < N; i++) put(dust, i, (rnd() * 2 - 1) * 2.6, (rnd() * 2 - 1) * 1.9, (rnd() * 2 - 1) * 1.6, 0, 0, 0, 0.05 + 0.12 * rnd(), 2);
 }
-function assemble(sec) {
-  if (wide || still || shown(sec) <= 0) return;
-  if (host !== sec) { host = sec; measure(); }
-  setScene(+sec.dataset.scene);
-  dust.view = { ...B.view };
-  A = dust;
-  e = 0;
-  draw();
+// Keep the opening field on screen until the terminal submits ssh.
+let awaitingTelescope = firstSection.id === 'about' && !still && scrollY === 0;
+if (awaitingTelescope) {
+  dust.view = { ...shapes[4].view };
+  A = B = dust;
 }
-function pickWindow() {
-  let best = host, most = shown(host);
-  for (const sec of winOf.keys()) { const h = shown(sec); if (h > most + 40) { best = sec; most = h; } }
-  if (best === host || most <= 0) return;
-  host = best;
-  measure();
-  setScene(+best.dataset.scene);
-  draw();
+function syncMobileScene() {
+  const edge = mobileFigure.getBoundingClientRect().bottom;
+  let active = firstSection;
+  for (const section of sections) {
+    if (section.getBoundingClientRect().top > edge + 1) break;
+    active = section;
+  }
+  showSection(active);
 }
 function measure() {
   measureBar();
@@ -113,15 +127,20 @@ function measure() {
   probe.remove();
   const w = wide ? innerWidth : sceneEl.clientWidth, h = wide ? innerHeight : sceneEl.clientHeight;
   R.resize(Math.max(20, Math.ceil(w / cw)), Math.max(10, Math.ceil(h / chh)));
+  // Tell the hero how far the viewport extends, in its own units, so it can scatter across all of
+  // it (narrow screens: across its window).
+  if (!filterOpensPage && !termReady) return;
   if (wide) {
     const g = geom(hero.view.zoom);
     hero.setBounds(-g.cx / (g.scale * g.aspect), (R.cols - g.cx) / (g.scale * g.aspect), -(R.rows - g.cy) / g.scale, g.cy / g.scale);
   } else {
-    const rows = (winOf.get(track).offsetHeight - CAPTION_STRIP) / chh, g = geom(hero.view.zoom, rows);
+    const rows = (mobileFigure.offsetHeight - CAPTION_STRIP) / chh, g = geom(hero.view.zoom, rows);
     hero.setBounds(-R.cols / 2 / (g.scale * g.aspect), R.cols / 2 / (g.scale * g.aspect), -rows / 2 / g.scale, rows / 2 / g.scale);
   }
 }
 
+// Where the figure goes and how big: beside the text on wide screens; on narrow ones, centred in
+// its window (the renderer is the window's size; rows: the height to fit, if not the renderer's).
 function geom(zoom, rows = R.rows) {
   const aspect = chh / cw;
   if (wide) return { aspect, scale: Math.min(R.rows * 0.37, (R.cols * 0.23) / aspect) * zoom, cx: R.cols * 0.69, cy: R.rows * 0.5 };
@@ -139,17 +158,20 @@ function draw() {
   cur.zoom = A.view.zoom + (B.view.zoom - A.view.zoom) * k;
   const g = geom(cur.zoom), par = B.view.par ?? 1;
   R.render(A, B, e, { yaw: cur.yaw + (smx * 0.35 + dragYaw) * par, pitch: cur.pitch + (smy * 0.2 + dragPitch) * par, cx: g.cx, cy: g.cy, scale: g.scale, aspect: g.aspect });
+  // one <pre> per colour layer: dim, ink and accent first, then the photo hues (see ascii.js)
   const text = R.toStrings();
   for (let k = 0; k < pres.length; k++) {
     const t = text[PRE_LAYER[k]];
     if (t || pres[k].firstChild) pres[k].textContent = t;
   }
-  const cap = B.caption();
+  const description = B.caption();
+  const cap = description ? `fig. ${figureNumber}  ${description}` : '';
   if (captionEl.textContent !== cap) captionEl.textContent = cap;
   syncStory();
   syncTip();
 }
 
+// ---- hero interaction: scrolling through the #top track (track, above) runs the particle filter
 let shownStage = -1;
 function syncStory() {
   const s = hero.state();
@@ -159,12 +181,18 @@ function syncStory() {
   const bar = `[${'#'.repeat(s.stage)}${'.'.repeat(s.total - s.stage)}]`;
   $('stageHint').textContent = s.resolved ? `${bar}  resolved` : `${bar}  scroll to resample`;
 }
+// ---- fig. 1 in the hero's terminal: after the login (see the end of this file), each stage
+// is a command, with its stage number as a comment, whose output is the stage text, and the
+// prompt waits for the next. Moving forward types the new command out; moving back rewinds at
+// once. The screen has a fixed height and keeps its newest lines in view, so earlier commands
+// scroll up and fade as in a terminal. Screen readers get the plain text instead.
 const termEl = $('term');
 let termStage = -1, typeTimer = 0, termReady = false;
 const PS = `<span class="ps">${esc(profile.prompt)}</span> `;
 const cmdOf = (s, total) => [s === 0 ? stageShell.first : stageShell.next, `# stage ${s + 1}/${total + 1}`];
 const cmdLength = (s, total) => { const [cmd, note] = cmdOf(s, total); return cmd.length + 2 + note.length; };
 const outOf = (s) => `<p class="out">${esc(stages[Math.min(s, stages.length - 1)])}</p>`;
+// One command line with its first n characters typed (Infinity: all of it).
 function cmdRow(s, total, n) {
   const [cmd, note] = cmdOf(s, total);
   const shown = n - cmd.length - 2;
@@ -182,12 +210,13 @@ function termHTML(s, total, n) {
 }
 function showTerm(html) {
   termEl.innerHTML = html;
-  termEl.scrollTop = termEl.scrollHeight;
+  termEl.scrollTop = termEl.scrollHeight; // keep the newest lines in view
   termEl.classList.toggle('scrolled', termEl.scrollTop > 0);
 }
 function syncTerm(s, total) {
+  if (!termReady) return;
   $('stageLive').textContent = `Stage ${s + 1} of ${total + 1}. ${stages[Math.min(s, stages.length - 1)]}`;
-  if (!termReady || s === termStage) return;
+  if (s === termStage) return;
   const forward = s > termStage;
   termStage = s;
   clearInterval(typeTimer);
@@ -200,6 +229,8 @@ function syncTerm(s, total) {
     if (n >= len) clearInterval(typeTimer);
   }, 32);
 }
+// ---- fig. 2's epidemic curve: a text histogram of new infections per week, shown in the
+// hover note over fig. 2 (see syncTip).
 const spread = shapes[1];
 const niceCeil = (v) => {
   const p = Math.pow(10, Math.floor(Math.log10(v)));
@@ -207,9 +238,10 @@ const niceCeil = (v) => {
 };
 const short = (v) => (v >= 1000 ? `${+(v / 1000).toFixed(1)}k` : String(v));
 function histHTML({ day, days, inc }) {
-  const WEEK = 7, ROWS = 6, bw = 1;
+  const WEEK = 7, ROWS = 6, bw = 1; // bw: characters per bar (1 keeps the note compact)
   const weeks = Math.ceil(days / WEEK);
   const bins = new Array(weeks).fill(0);
+  // day 0 holds the starting cases; they count in week 1, so the bars add up to I + R
   for (let d = 0; d <= day; d++) bins[d && Math.floor((d - 1) / WEEK)] += inc[d];
   const now = day > 0 ? Math.floor((day - 1) / WEEK) : -1;
   const top = niceCeil(Math.max(100, ...bins));
@@ -218,12 +250,14 @@ function histHTML({ day, days, inc }) {
     let row = '';
     for (let w = 0; w < weeks; w++) {
       const v = (bins[w] / top) * ROWS;
+      // '#' full row, ':' half; any week with new infections shows at least a '.'
       const ch = (v >= r ? '#' : v >= r - 0.5 ? ':' : r === 1 && bins[w] > 0 ? '.' : ' ').repeat(bw);
       row += ch.trim() ? `<span class="${w === now ? 'now' : 'bar'}">${ch}</span>` : ch;
     }
     lines.push(`${(r === ROWS ? short(top) : '').padStart(4)} |${row}`);
   }
   lines.push(`   0 +${'-'.repeat(weeks * bw)}`);
+  // day labels under the axis, placed by column
   const axis = Array(weeks * bw + 10).fill(' ');
   for (const [d, text] of [[0, '0'], [100, '100'], [days, `${days} days`]]) {
     const at = Math.round((d / WEEK) * bw);
@@ -234,16 +268,23 @@ function histHTML({ day, days, inc }) {
 }
 
 function syncScroll() {
+  // the panel is pinned from when the track's top reaches the banner until its bottom leaves
+  // (phones have no track: there the filter plays by itself, see autoplay)
   if (wide) {
     const span = track.offsetHeight - innerHeight + motd, r = track.getBoundingClientRect();
     hero.setProgress(span > 0 ? (motd - r.top) / span : 1, still);
   } else {
     if (still) hero.setProgress(1, true);
-    pickWindow();
+    syncMobileScene();
   }
   if (still && B === hero) { hero.snap(); hero.update(t, 0); draw(); }
 }
 
+// ---- hover note: over a figure's particles, a note appears (mouse only). Over fig. 1 it is
+// the filter note, beside the cursor; over fig. 2, the model note and the epidemic curve so
+// far, redrawn as days pass and docked beside the figure (without a mouse, the panels show
+// the notes). It shows within a few cells of a drawn particle,
+// outside the text, and lingers briefly so gaps in a sparse field do not make it flicker.
 const tip = $('tip');
 const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
 let tipX = -1, tipY = -1, tipOn = false, tipHit = 0, tipKey = '';
@@ -253,6 +294,7 @@ function nearParticles(x, y) {
     for (let c = Math.max(0, c0 - 3); c <= Math.min(R.cols - 1, c0 + 3); c++) if (R.ch[r * R.cols + c]) return true;
   return false;
 }
+// The point drawn at (x, y), or at the nearest drawn cell a little around it; -1 if none.
 function pointAt(x, y) {
   const o = sceneEl.getBoundingClientRect();
   const c0 = Math.floor((x - o.left) / cw), r0 = Math.floor((y - o.top) / chh);
@@ -264,6 +306,8 @@ function pointAt(x, y) {
     }
   return best;
 }
+// A click (or tap) on fig. 2 starts a new epidemic from the person there. With animation
+// off, the frame shows it 45 days on.
 function seedFrom(x, y) {
   if (B !== spread || e < 1) return;
   if (spread.seedAt(pointAt(x, y), still ? 45 : 0) && still) draw();
@@ -280,7 +324,7 @@ function syncTip() {
   const on = hit || (tipOn && now - tipHit < 250);
   if (on !== tipOn) { tipOn = on; tip.classList.toggle('on', on); }
   document.body.classList.toggle('seed', on && fig === 'sir');
-  if (!on) { dock = -1; return; }
+  if (!on) { dock = -1; return; } // the next hover chooses its spot afresh
   const curve = fig === 'sir' && spread.history();
   const key = curve ? `sir:${curve.run}:${curve.day}` : 'pf';
   if (key !== tipKey) {
@@ -290,13 +334,18 @@ function syncTip() {
     else tip.textContent = filterNote.text;
   }
   const w = tip.offsetWidth, h = tip.offsetHeight;
+  // fig. 2's note is large, so it docks where it hides the least of the figure; fig. 1's
+  // sits beside the cursor, flipped to the other side near the right and bottom edges
   const [x, y] = (curve && dockSpot(w, h)) || [
     Math.max(8, tipX + 16 + w > innerWidth - 8 ? tipX - 12 - w : tipX + 16),
     Math.max(8, tipY + 20 + h > innerHeight - 8 ? tipY - 12 - h : tipY + 20),
   ];
   tip.style.transform = `translate(${x}px, ${y}px)`;
 }
-const NAV_H = 52, CAPTION_H = 36;
+// Docking: try spots around the figure and in the right-hand corners, and take the one
+// covering the fewest drawn cells (covering the text panel rules a spot out). The current
+// spot is kept unless another is clearly better, so the note does not hop as the figure sways.
+const NAV_H = 52, CAPTION_H = 36; // room kept clear for the nav and the caption
 let dock = -1;
 function dockSpot(w, h) {
   const box = drawnBox();
@@ -305,9 +354,9 @@ function dockSpot(w, h) {
   const maxX = innerWidth - w - 8, maxY = innerHeight - CAPTION_H - h;
   const fit = ([x, y]) => [Math.min(maxX, Math.max(8, x)), Math.min(maxY, Math.max(NAV_H, y))];
   const spots = [
-    [cx - w / 2, box.y0 - h - 14], [cx - w / 2, box.y1 + 14],
-    [box.x1 + 14, cy - h / 2], [box.x0 - w - 14, cy - h / 2],
-    [maxX, NAV_H], [maxX, maxY],
+    [cx - w / 2, box.y0 - h - 14], [cx - w / 2, box.y1 + 14], // above, below
+    [box.x1 + 14, cy - h / 2], [box.x0 - w - 14, cy - h / 2], // right, left
+    [maxX, NAV_H], [maxX, maxY], // top-right and bottom-right corners
   ].map(fit);
   const panels = [...document.querySelectorAll('.panel')].map((p) => p.getBoundingClientRect())
     .filter((r) => r.bottom > 0 && r.top < innerHeight);
@@ -319,6 +368,7 @@ function dockSpot(w, h) {
   dock = best;
   return spots[best];
 }
+// Drawn scene cells inside a screen rectangle (px).
 function covered(x, y, w, h) {
   let n = 0;
   const c1 = Math.min(R.cols - 1, Math.floor((x + w) / cw)), r1 = Math.min(R.rows - 1, Math.floor((y + h) / chh));
@@ -326,6 +376,7 @@ function covered(x, y, w, h) {
     for (let c = Math.max(0, Math.floor(x / cw)); c <= c1; c++) if (R.ch[r * R.cols + c]) n++;
   return n;
 }
+// Screen box (px) around everything drawn in the scene this frame.
 function drawnBox() {
   let c0 = R.cols, c1 = -1, r0 = R.rows, r1 = -1;
   for (let r = 0; r < R.rows; r++)
@@ -342,10 +393,12 @@ document.addEventListener('mouseout', (ev) => { if (!ev.relatedTarget) { tipX = 
 
 function setScene(i) {
   sceneIndex = i;
-  document.body.classList.toggle('night', i === 4);
+  document.body.classList.toggle('night', i === 4); // night falls at the bottom of the page, under fig. 5
+  if (awaitingTelescope && i === 4) return;
+  awaitingTelescope = false;
   const next = sceneFor(i);
   if (!next || next === B) return;
-  relax = true;
+  relax = true; // each new scene starts from its own default angle
   if (still) { dragYaw = dragPitch = 0; }
   if (still) { A = B = next; e = 1; draw(); return; }
   if (e < 1) {
@@ -359,6 +412,8 @@ function setScene(i) {
   e = 0;
 }
 
+// Phones: the filter resolves over 10 s, holds, rewinds and starts again, counting from the end
+// of the login (playFrom).
 let playFrom = Infinity;
 function autoplay(t) {
   const F = 10, H = 5, B = 2.5, REST = 1.5, x = t % (F + H + B + REST);
@@ -366,12 +421,12 @@ function autoplay(t) {
 }
 function frame(now) {
   raf = requestAnimationFrame(frame);
-  if (now - last < 32) return;
+  if (now - last < 32) return; // ~30 fps is plenty for characters
   const dt = Math.min(0.1, (now - last) / 1000);
   last = now;
   t += dt;
   if (e < 1) e = Math.min(1, e + dt / 1.4);
-  if (!wide) hero.setProgress(autoplay(t - playFrom), false);
+  if (!wide && termReady) hero.setProgress(autoplay(t - playFrom), false); // scattered until the login is over
   smx += (mx - smx) * 0.08;
   smy += (my - smy) * 0.08;
   if (relax && !dragging) { dragYaw *= 0.88; dragPitch *= 0.88; if (Math.abs(dragYaw) + Math.abs(dragPitch) < 0.002) { dragYaw = dragPitch = 0; relax = false; } }
@@ -385,8 +440,9 @@ function stop() { cancelAnimationFrame(raf); raf = 0; }
 
 measure();
 syncScroll();
+// The filter runs in a worker; with animation off, nothing else would show its result.
 hero.onready = () => { if (still && B === hero) { hero.update(t, 0); draw(); } };
-hero.snap();
+hero.snap(); // a reload part-way down the page should not replay the filter from scratch
 hero.update(t, 0);
 draw();
 start();
@@ -399,6 +455,11 @@ addEventListener('pointermove', (ev) => {
   mx = (ev.clientX / innerWidth) * 2 - 1;
   my = (ev.clientY / innerHeight) * 2 - 1;
 }, { passive: true });
+// Drag on empty space (anywhere outside the text and nav) to rotate the model.
+// A press that ends within a few pixels of where it began is a click (see seedFrom); one
+// that moves further is a drag. Touch drags rotate only in a figure's window (phones), and
+// only sideways: the window leaves vertical swipes to the page (touch-action: pan-y), which
+// then cancels the drag. Elsewhere a touch only taps and a touch drag scrolls.
 addEventListener('pointerdown', (ev) => {
   const inWindow = !!ev.target.closest('.fig-window');
   if (ev.button !== 0 || (ev.target.closest('.panel, .nav') && !inWindow)) return;
@@ -428,30 +489,19 @@ addEventListener('pointercancel', endDrag);
 
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measure(); draw(); });
 
-playSession({
-  hero: document.querySelector('.hero'),
-  ssh: $('sshLine'), gap: $('sshGap'), rows: [...document.querySelectorAll('#name .banner > span')],
-  line: $('line'), last: $('lastLogin'),
-  local: profile.login.local, command: profile.login.command, tagline: profile.line,
-  still,
-  onDone: () => {
-    termReady = true;
-    playFrom = t;
-    const s = hero.state();
-    syncTerm(s.stage, s.total);
-  },
-});
-
+// ---- the astrophotographs: ls -l, then imgcat (js/imgcat.js), drawn when the section prints
+// The photo on show also hangs on fig. 5's sky, behind the telescope.
 const nightSky = shapes[4];
 const imgcat = setupImgcat({
   list: $('astroList'), block: $('imgcat'), photos: astro, first: 'moon-hdr.jpg', prompt: profile.prompt, still,
   onPhoto: (pic, p) => {
-    if (!nightSky.setPhoto) return;
+    if (!nightSky.setPhoto) return; // an older astro.js (a stale cache)
     nightSky.setPhoto(pic, p.title, still);
     if (still && B === nightSky) { nightSky.update(t, 0); draw(); }
   },
 });
 
+// ---- the later sections: each types its command as it comes into view, then prints.
 shell = typeOnArrival({
   items: [...document.querySelectorAll('.cmdline')].map((line) => ({
     key: line.dataset.cmd, section: line.closest('section'), line, command: commands[line.dataset.cmd],
@@ -459,17 +509,53 @@ shell = typeOnArrival({
   prompt: profile.prompt,
   still,
   onShow: (el) => {
-    if (el.classList.contains('fig-window')) assemble(el.closest('section'));
     if (el.id === 'imgcat') imgcat.start();
   },
 });
 
-const navLinks = [...document.querySelectorAll('.nav nav a')];
+function startFilter() {
+  termReady = true;
+  if (!filterOpensPage) measure();
+  playFrom = t;
+  const s = hero.state();
+  syncTerm(s.stage, s.total);
+}
+
+playSession({
+  hero: filterOpensPage ? track.querySelector('.hero') : firstSection,
+  ssh: $('sshLine'), gap: $('sshGap'), rows: [...document.querySelectorAll('#name .banner > span')],
+  line: $('line'), last: $('lastLogin'),
+  local: profile.login.local, command: profile.login.command, tagline: profile.line,
+  still,
+  onCommand: () => {
+    if (!awaitingTelescope) return;
+    awaitingTelescope = false;
+    setScene(4);
+  },
+  onDone: () => {
+    shell.observeArrivals();
+    if (filterOpensPage) {
+      startFilter();
+    } else {
+      const arrival = new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting) return;
+        arrival.disconnect();
+        startFilter();
+      }, { rootMargin: '0px 0px -30% 0px' });
+      arrival.observe(track);
+    }
+  },
+});
+
+function showSection(section) {
+  figureNumber = figureNumbers.get(section);
+  setScene(Number(section.dataset.scene));
+  for (const link of navLinks) link.classList.toggle('on', link.hash === '#' + section.id);
+}
+
+// Wide screens follow the section at mid-screen. Phones use the sticky figure's lower edge.
 const io = new IntersectionObserver((entries) => {
-  for (const en of entries) {
-    if (!en.isIntersecting) continue;
-    if (wide) setScene(+en.target.dataset.scene);
-    for (const a of navLinks) a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id);
-  }
+  if (!wide) return;
+  for (const entry of entries) if (entry.isIntersecting) showSection(entry.target);
 }, { rootMargin: '-50% 0px -50% 0px', threshold: 0 });
-document.querySelectorAll('section[data-scene]').forEach((s) => io.observe(s));
+sections.forEach((section) => io.observe(section));

@@ -1,5 +1,10 @@
+// All site content lives here. Edit this file to add a paper or a project.
+
 export const profile = {
   name: 'Supun Manathunga',
+  // The name as the hero draws it: a terminal banner made with figlet (the npm package, 1.8.0),
+  // font "Larry 3D", one word at a time: SUPUN, then MANATHUNGA.
+  // Plain ASCII only, so every character is in Courier Prime and the columns line up.
   banner: [
     " ____    __  __  ____    __  __  __  __",
     "/\\  _`\\ /\\ \\/\\ \\/\\  _`\\ /\\ \\/\\ \\/\\ \\/\\ \\",
@@ -17,25 +22,31 @@ export const profile = {
     "   \\/_/ \\/_/\\/_/\\/_/\\/_/\\/_/\\/_/\\/_/  \\/_/  \\/_/\\/_/\\/_____/\\/_/\\/_/\\/___/  \\/_/\\/_/",
   ],
   prompt: 'supun@mcgill:~$',
+  // The hero opens with the visitor logging in: `local` is their prompt, `command` what they type.
   login: { local: '$', command: 'ssh supun@mcgill' },
   line: 'Bayesian methods, sequential Monte Carlo and machine learning for infectious disease epidemiology.',
   lab: { label: 'D3MOD lab', url: 'https://mchi.mcgill.ca/#/labs/d3mod' },
   links: [
+    // the CV without funding amounts or contact details, made from ~/Desktop/PhD/CVs/CV.docx
     { label: 'CV (PDF)', url: 'assets/Supun-Manathunga-CV.pdf' },
     { label: 'Google Scholar', url: 'https://scholar.google.com/citations?user=oewW6r4AAAAJ&hl=en' },
     { label: 'GitHub', url: 'https://github.com/ssm123ssm' },
     { label: 'D3MOD lab', url: 'https://mchi.mcgill.ca/#/labs/d3mod' },
   ],
+  // About, in the first person. {lab} becomes a link to the lab.
   about: 'I am a PhD candidate in Experimental Medicine at McGill University, in the {lab}. My research interests are Bayesian methods, sequential Monte Carlo and machine learning for infectious disease epidemiology.',
+  // Before McGill (wording the user chose: no places or dates).
   background: 'I obtained my MBBS from the Faculty of Medicine, University of Peradeniya, and worked as a medical doctor in both the curative and preventive health sectors. I then joined the University of Peradeniya as a lecturer, before coming to McGill for my PhD.',
-  hobby: 'Outside research, I {photograph the night sky}: nebulae, galaxies, comets and the Moon.',
+  hobby: 'Outside research, I {photograph the night sky}: nebulae, galaxies, comets and the Moon.', // {..} links to the photos
 };
 
+// The featured piece of work, shown in the hero next to its scene.
 export const spotlight = {
   label: 'Current work',
   title: 'A model-based adaptive sampling framework for infectious disease surveillance',
   authors: 'S Manathunga, N Osgood, SF O\'Brien, DL Buckeridge, WA Russell',
   venue: 'arXiv:2611.01199, 2026',
+  // From the SMDM prize page, which lists the 2026 winners.
   prize: {
     label: 'Lee B. Lusted Student Prize, SMDM 2026',
     url: 'https://smdm.org/lee-b-lusted-student-prize-competition/',
@@ -49,6 +60,7 @@ export const spotlight = {
   ],
 };
 
+// Shown in the hero, one per state of the scene: scattered, four partial steps, resolved.
 export const stages = [
   'Before any data, the shape could be anything. Each particle is one guess, and the guesses are scattered everywhere.',
   'The first data arrive. Guesses that fit are kept and copied; the ones that do not are dropped.',
@@ -58,8 +70,12 @@ export const stages = [
   'The shape is resolved. That is a particle filter: many rough guesses, refined by data, round after round.',
 ];
 
+// After the login, the hero's terminal runs fig. 1 as scrolling moves through it: the first
+// stage runs `first`, each later one `next`, and the stage text above is the command's output.
 export const stageShell = { first: 'pf init --particles 16000', next: 'pf step' };
 
+// What the terminal types as each later section comes into view; the section prints as its
+// output. A Papers tab adds its topic as a folder (ls -t papers/bayes/).
 export const commands = {
   work: 'cat current-work.md',
   research: 'cat research.md',
@@ -71,14 +87,18 @@ export const commands = {
   about: 'whoami',
 };
 
+// fig. 1 is a real particle filter. These point readers at its code and at the script that
+// checks its output against the target; both are served with the site.
 const pfCode = 'js/particle-filter.js';
 const pfCheck = 'tools/check-filter.mjs';
 
+// Shown in the hero, under the scroll hint.
 export const filterNote = {
   text: 'This is a real particle filter: 16,000 particles tempered toward a 3D density shaped like the virion, with systematic resampling and Metropolis-Hastings moves.',
   links: [{ label: 'Particle filter code', url: pfCode }],
 };
 
+// fields: the main areas, shown as a line under the title.
 export const themes = [
   {
     key: 'epi',
@@ -96,6 +116,7 @@ export const themes = [
 
 const arx = (id) => `https://arxiv.org/abs/${id}`;
 
+// tag: epi | bayes | ai | clin.  cites: Google Scholar, Nov 2026 (null = not yet listed).
 export const pubs = [
   { y: 2026, tag: 'epi', cites: null, url: arx('2611.01199'), t: 'A model-based adaptive sampling framework for infectious disease surveillance', a: 'S Manathunga, N Osgood, SF O\'Brien, DL Buckeridge, WA Russell', v: 'arXiv:2611.01199' },
   { y: 2026, tag: 'bayes', cites: null, url: arx('2602.14877'), t: 'When to repeat a biomarker test? Decomposing sources of variation from conditionally repeated measurements', a: 'S Manathunga, MP Janssen, Y Luo, WA Russell, M Pothast', v: 'arXiv:2602.14877' },
@@ -125,14 +146,19 @@ export const tagNames = { all: 'All', epi: 'Epidemics', bayes: 'Bayesian', ai: '
 
 const gh = (r) => `https://github.com/ssm123ssm/${r}`;
 
+// fig. 2 is a live stochastic SIR epidemic. Shown in its hover note and the Research panel;
+// keep the numbers in step with PARAMS in js/sir.js.
 const sirCode = 'js/sir.js';
 export const sirNote = {
   text: 'This is a live stochastic SIR epidemic on a 120 x 120 grid: each day an infected person infects each neighbour with probability 0.1, rarely someone far away, and recovers with probability 0.15.',
   links: [{ label: 'SIR model code', url: sirCode }],
-  hint: 'Click the grid to start an epidemic there.',
-  touch: 'Tap the grid to start an epidemic there.',
+  hint: 'Click the grid to start an epidemic there.', // in the hover note only (mouse)
+  touch: 'Tap the grid to start an epidemic there.', // in the note under the figure (touch screens)
 };
 
+// Astrophotography: finished images from the Astro projects folder, resized to 1600 px at most
+// in assets/astro, with no metadata. The Astrophotography section lists them in this order and
+// shows the first by default (it also becomes fig. 5's sky). y: year of the final edit.
 export const astro = [
   { file: 'moon-hdr.jpg', title: 'Moon, HDR', y: 2023 },
   { file: 'carina-nebula.jpg', title: 'Carina Nebula', y: 2023 },
@@ -149,10 +175,11 @@ export const astro = [
   { file: 'gibbous-moon.jpg', title: 'Waning gibbous Moon', y: 2024 },
 ];
 
+// links: extra links shown after Live site / Source.
 export const projects = [
   {
     name: 'This portfolio', stack: 'JavaScript',
-    text: 'This site, written as a terminal session. The figures come from a small renderer that draws 3D point clouds as ASCII characters, without libraries. Fig. 1 is a real sequential Monte Carlo sampler: 16,000 particles tempered toward a 3D density of the virion, with systematic resampling and Metropolis-Hastings moves, checked against exact draws. Fig. 2 is a stochastic SIR epidemic on a 120 x 120 grid, run live.',
+    text: 'This site, written as a terminal session. The figures come from a small renderer that draws 3D point clouds as ASCII characters, without libraries. The particle filter is a real sequential Monte Carlo sampler: 16,000 particles tempered toward a 3D density of the virion, with systematic resampling and Metropolis-Hastings moves, checked against exact draws. The research figure shows a stochastic SIR epidemic on a 120 x 120 grid, run live.',
     links: [{ label: 'Renderer', url: 'js/ascii.js' }, { label: 'Particle filter', url: pfCode }, { label: 'Check script', url: pfCheck }, { label: 'SIR model', url: sirCode }],
   },
   { name: 'adaptive-sampling', stack: 'R / HTML', text: 'Using a stochastic epidemic model to guide efficient seroprevalence sampling decisions.', live: 'https://ssm123ssm.github.io/adaptive-sampling/', code: gh('adaptive-sampling') },
@@ -169,6 +196,9 @@ export const projects = [
   { name: 'CodePen', stack: 'HTML / CSS / JS', text: 'Smaller pieces in HTML, CSS and JavaScript.', links: [{ label: 'codepen.io/ssm123ssm', url: 'https://codepen.io/ssm123ssm' }] },
 ];
 
+// Funding and awards, from the CV (Sep 2026), newest first. The linked pages list them: McGill's
+// Tomlinson scholars (2025-2026), the AI4PH trainees (2026-2027 cohort), the OHAP trainees (2025
+// cohort), SMDM's Lusted winners (2026); the FRQS one links the award's DOI.
 export const awards = [
   { y: '2026', name: 'Lee B. Lusted Student Prize', by: 'Society for Medical Decision Making, 48th Annual Meeting, Oslo: Quantitative Methods and Theoretical Developments', url: 'https://smdm.org/lee-b-lusted-student-prize-competition/' },
   { y: '2026', name: 'AI4PH Trainee Scholarship', by: 'AI4PH (Artificial Intelligence for Public Health) Health Research Training Platform, 2026-27', url: 'https://ai4ph-hrtp.ca/trainees/' },
@@ -180,8 +210,12 @@ export const awards = [
   { y: '2022-25', name: 'Presentation and research awards', by: 'At academic sessions in Sri Lanka, among them the Research Excellence Award of the Peradeniya Medical School Annual Research Congress (2024)' },
 ];
 
+// Contact: a form that a form-delivery service emails on, so no address is on the page. Set
+// endpoint to the form's URL there (Formspree: 'https://formspree.io/f/<id>'; Web3Forms:
+// 'https://api.web3forms.com/submit', with fields: { access_key: '<key>' }). Until then,
+// sending says it is not set up.
 export const contact = {
   intro: 'Write to me here and I will reply by email.',
-  endpoint: 'https://formspree.io/f/moedjgpo',
+  endpoint: 'https://formspree.io/f/moedjgpo', // Formspree form for this site
   fields: {},
 };

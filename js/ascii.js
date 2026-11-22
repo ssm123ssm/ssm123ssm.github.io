@@ -1,3 +1,6 @@
+// ASCII 3D engine: point clouds splatted into a character grid with a z-buffer.
+// DOM-free so it can be exercised from node (see tools/preview.mjs).
+
 export const N = 16000;
 const RAMP = " .:-=+*#%@";
 const LIGHT = norm3(-0.45, 0.65, -0.62);
@@ -18,7 +21,10 @@ export function rng32(seed) {
   };
 }
 
+// layer: 0 = base ink, 1 = accent, 2 = dim; 3-8 = colours for a photograph's hues (red, orange,
+// teal, blue, violet, pink), which fig. 5 uses when it shows one.
 export const LAYERS = 9;
+// fl: > 0 flat brightness; <= 0 lambert shading with gain -fl (0 means gain 1).
 export function makeShape() {
   return {
     pos: new Float32Array(N * 3),
@@ -52,6 +58,7 @@ export function put(S, i, x, y, z, nx, ny, nz, fl, layer) {
   S.layer[i] = layer;
 }
 
+// Park unused points somewhere they are occluded.
 export function park(S, from, x, y, z) {
   for (let i = from; i < N; i++) put(S, i, x, y, z, 0, 0, 0, 0.02, 2);
 }
@@ -59,6 +66,9 @@ export function park(S, from, x, y, z) {
 const pad3 = (n) => String(n).padStart(3, "0");
 const pad2 = (n) => String(n).padStart(2, "0");
 
+// fig. 2, the SIR epidemic, lives in sir.js.
+
+// ---------------------------------------------------------------- virion
 export function buildVirion() {
   const S = makeShape();
   const NS = 11000,
@@ -94,22 +104,31 @@ export function buildVirion() {
   }
   park(S, idx, 0, 0, 0);
   S.caption = () =>
-    "fig. 3  SARS-CoV-2   transmissibility of variants of concern, Virol J 2023";
+    "SARS-CoV-2   transmissibility of variants of concern, Virol J 2023";
   S.view = { spin: 0.3, yaw0: 0, sway: 0, pitch: 0.2, zoom: 1 };
   return S;
 }
 
+// The hero (fig. 1), a real particle filter, lives in particle-filter.js.
+
+// ---------------------------------------------------------------- cube (fig. 4)
+// A 3 x 3 x 3 cube puzzle that scrambles itself with MOVES random face turns, then plays them
+// back in reverse until it is solved again, rests, and starts over. Each of the 26 small
+// cubes carries its stickers (tiles with gaps between them). With three inks, opposite faces
+// share one: up and down red, front and back ink, left and right grey, so the three faces in
+// view differ when solved and turn into mosaics when scrambled.
 export function buildCube() {
   const S = makeShape();
-  const SIZE = 0.3;
-  const TILE = 0.86;
+  const SIZE = 0.3; // edge of a small cube
+  const TILE = 0.86; // sticker width, as a share of the small cube's face
   const MOVES = 20;
-  const TURN = 0.45;
-  const PAUSE = 0.08;
-  const REST = 1.6;
-  const LAYER = [2, 2, 1, 1, 0, 0];
+  const TURN = 0.45; // seconds per quarter turn
+  const PAUSE = 0.08; // between turns
+  const REST = 1.6; // seconds solved before the next scramble
+  const LAYER = [2, 2, 1, 1, 0, 0]; // ink per face: +x -x +y -y +z -z
   const rnd = rng32(23);
   const sm = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
+  // the small cubes: integer position and orientation (a 3 x 3 rotation, row-major)
   const cubes = [];
   for (let x = -1; x <= 1; x++)
     for (let y = -1; y <= 1; y++)
@@ -122,7 +141,8 @@ export function buildCube() {
         cubes.push({ p: [x, y, z], R: [1, 0, 0, 0, 1, 0, 0, 0, 1], stickers });
       }
   const nStickers = cubes.reduce((n, c) => n + c.stickers.length, 0);
-  const G = Math.floor(Math.sqrt(N / nStickers));
+  const G = Math.floor(Math.sqrt(N / nStickers)); // points per sticker side
+  // each sticker's points and normal in its cube's own frame (cube centre at 0, edge 1)
   const tile = (face) => {
     const ax = face >> 1, sg = face & 1 ? -1 : 1;
     const u = (ax + 1) % 3, v = (ax + 2) % 3;
@@ -150,6 +170,7 @@ export function buildCube() {
   };
   const quarter = (axis, dir) => rot(axis, (dir * Math.PI) / 2).map((v) => Math.round(v));
 
+  // the script: a scramble of MOVES turns (no turn undoing the last), then its reverse
   let script = [], step = 0, clock = 0;
   const newScript = () => {
     const moves = [];
@@ -173,6 +194,7 @@ export function buildCube() {
       const m = script[step];
       const u = clock / TURN;
       if (u >= 1 + PAUSE / TURN) {
+        // finish this turn: move the turning layer's cubes for good
         const Q = quarter(m.axis, m.dir);
         for (const c of cubes)
           if (c.p[m.axis] === m.layer) {
@@ -205,17 +227,20 @@ export function buildCube() {
         }
       }
     }
-    park(S, idx, 0, 0, 0);
+    park(S, idx, 0, 0, 0); // spare points, hidden inside the cube
   };
   S.caption = () => {
     const k = phase === "scrambling" ? step + 1 : step - MOVES + 1;
-    return `fig. 4  things built   a 3 x 3 x 3 cube puzzle, ${phase === "solved" ? "solved" : `${phase}: turn ${pad2(Math.min(k, MOVES))} of ${MOVES}`}`;
+    return `things built   a 3 x 3 x 3 cube puzzle, ${phase === "solved" ? "solved" : `${phase}: turn ${pad2(Math.min(k, MOVES))} of ${MOVES}`}`;
   };
   S.view = { spin: 0.15, yaw0: 0.6, sway: 0, pitch: 0.5, zoom: 1 };
   S.update(0, 0);
   return S;
 }
 
+// fig. 5, the astrophotography gallery, lives in astro.js (it reads images, so browser only).
+
+// ---------------------------------------------------------------- renderer
 const ease = (e) => (e < 0.5 ? 4 * e * e * e : 1 - Math.pow(-2 * e + 2, 3) / 2);
 
 export class Renderer {
@@ -233,10 +258,11 @@ export class Renderer {
     this.zb = new Float32Array(cols * rows);
     this.ch = new Uint8Array(cols * rows);
     this.ly = new Uint8Array(cols * rows);
-    this.id = new Int32Array(cols * rows);
+    this.id = new Int32Array(cols * rows); // which point is drawn in each cell, for picking
     this.line = new Uint16Array(cols);
   }
 
+  // Blend A -> B at progress e into shape `into` (used when a morph is interrupted).
   snapshot(A, B, e, into) {
     const k = ease(e),
       sw = Math.sin(Math.PI * e) * 0.45,
@@ -250,6 +276,7 @@ export class Renderer {
     into.layer.set(src.layer);
   }
 
+  // view: { yaw, pitch, cx, cy, scale, aspect }
   render(A, B, e, view) {
     const { cols, rows, zb, ch, ly, id, jit } = this;
     zb.fill(0);
@@ -257,7 +284,7 @@ export class Renderer {
     const k = ease(e),
       sw = Math.sin(Math.PI * e) * 0.45;
     const src = e < 0.5 ? A : B;
-    const two = !!src.twoSided;
+    const two = !!src.twoSided; // shapes made of thin sheets light both faces
     const cy = Math.cos(view.yaw),
       sy = Math.sin(view.yaw);
     const cp = Math.cos(view.pitch),
@@ -297,7 +324,7 @@ export class Renderer {
         const ny2 = ny * cp + nz1 * sp,
           nz2 = -ny * sp + nz1 * cp;
         let d = nx1 * LIGHT[0] + ny2 * LIGHT[1] + nz2 * LIGHT[2];
-        if (two && d < 0) d = -d;
+        if (two && d < 0) d = -d; // a thin sheet is lit on whichever face we see
         b = (0.14 + 0.86 * (d > 0 ? d : 0)) * (b < 0 ? -b : 1);
       }
       b *= 1.0 - 0.22 * z2;
@@ -309,6 +336,8 @@ export class Renderer {
     }
   }
 
+  // One string per ink layer; cells belonging to other layers are spaces.
+  // Only the layers in use are built; the rest come back empty.
   toStrings() {
     const { cols, rows, ch, ly, line } = this;
     let used = 0;

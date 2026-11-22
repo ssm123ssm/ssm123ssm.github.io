@@ -1,19 +1,31 @@
+// Scenes for the Papers section (fig. 3), one per topic tab. Epidemics keeps the virion
+// (buildVirion in ascii.js); All (a simulated outbreak on a turning Earth), Bayesian,
+// Language models (a Swiss roll unrolling) and Clinical are here.
+
 import { N, makeShape, put, park, fib, rng32 } from "./ascii.js";
 import { isLand } from "./land.js";
 
 const pad2 = (n) => String(n).padStart(2, "0");
 const pad3 = (n) => String(n).padStart(3, "0");
 
+// ---------------------------------------------------------------- all: outbreaks around the world
+// A simulated outbreak on a turning Earth. Land and sea come from js/land.js (Natural Earth,
+// 1 degree). The outbreak spreads over land between neighbouring points (each point's 6 nearest
+// land neighbours, so it stops at coastlines): each day an infected point infects each
+// susceptible neighbour with probability SPREAD and recovers with probability GAMMA. Now and
+// then, more often the more is infected, it is carried by air to a city not yet reached: a red
+// arc flies there and a new focus starts. Infected land glows red and stands up; recovered land
+// is darker. When it has burnt out, a new outbreak starts in another city.
 export function buildWorld() {
   const S = makeShape();
-  const R = 0.8;
-  const ARCS = 3;
+  const R = 0.8; // globe radius
+  const ARCS = 3; // flights in the air at once, at most
   const ARCPTS = 400;
-  const M = N - ARCS * ARCPTS;
+  const M = N - ARCS * ARCPTS; // points on the globe
   const SPREAD = 0.3, GAMMA = 0.08;
-  const RATE = 5;
-  const FLIGHT = 1.6;
-  const HOLD = 2;
+  const RATE = 5; // days per second
+  const FLIGHT = 1.6; // seconds in the air
+  const HOLD = 2; // seconds a finished outbreak stays
   const CITIES = [
     ["Colombo", 6.93, 79.85], ["Montreal", 45.5, -73.57], ["London", 51.51, -0.13], ["Lagos", 6.52, 3.38],
     ["Cairo", 30.04, 31.24], ["Mumbai", 19.08, 72.88], ["Jakarta", -6.21, 106.85], ["Tokyo", 35.68, 139.69],
@@ -26,6 +38,7 @@ export function buildWorld() {
     const p = (lat * Math.PI) / 180, l = (lon * Math.PI) / 180;
     return [Math.cos(p) * Math.cos(l), Math.sin(p), Math.cos(p) * Math.sin(l)];
   };
+  // the globe's points, and which are land
   const pt = new Float32Array(M * 3);
   const isL = new Uint8Array(M);
   const landIdx = [];
@@ -42,6 +55,7 @@ export function buildWorld() {
   const L = landIdx.length;
   const pos = new Float32Array(L * 3);
   landIdx.forEach((i, k) => pos.set(pt.subarray(i * 3, i * 3 + 3), k * 3));
+  // 6 nearest land neighbours of each land point, through a coarse grid
   const NB = 6;
   const nbr = new Int32Array(L * NB);
   {
@@ -65,6 +79,7 @@ export function buildWorld() {
       for (let n = 0; n < NB; n++) nbr[k * NB + n] = near[n] ? near[n][1] : k;
     }
   }
+  // each city's nearest land point
   const cityAt = CITIES.map(([, lat, lon]) => {
     const [x, y, z] = xyz(lat, lon);
     let best = 0, bd = Infinity;
@@ -109,6 +124,7 @@ export function buildWorld() {
     st.set(nx);
     for (let k = 0; k < L; k++) if (st[k] === 1) nI++;
     day++;
+    // air travel: the more infected, the likelier a flight to a city not yet reached
     const todo = CITIES.map((_, c) => c).filter((c) => !reached.includes(c) && !flights.some((f) => f.to === c));
     if (todo.length && flights.length < ARCS && rnd() < Math.min(0.12, nI / 900)) {
       const from = reached[Math.floor(rnd() * reached.length)];
@@ -134,6 +150,7 @@ export function buildWorld() {
       if (f.t >= 1) seedCity(f.to);
     }
     flights = flights.filter((f) => f.t < 1);
+    // local shares of infected and recovered, smoothed twice over neighbours
     for (let k = 0; k < L; k++) {
       tI[k] = st[k] === 1 ? 1 : 0;
       tR[k] = st[k] === 2 ? 1 : 0;
@@ -155,7 +172,7 @@ export function buildWorld() {
     for (let i = 0; i < M; i++) {
       const d0 = pt[i * 3], d1 = pt[i * 3 + 1], d2 = pt[i * 3 + 2];
       if (!isL[i]) {
-        put(S, idx++, d0 * R * 0.985, d1 * R * 0.985, d2 * R * 0.985, d0, d1, d2, 0.08, 2);
+        put(S, idx++, d0 * R * 0.985, d1 * R * 0.985, d2 * R * 0.985, d0, d1, d2, 0.08, 2); // sea: faint dots
         continue;
       }
       lift[k] += (0.06 * shI[k] - lift[k]) * Math.min(1, dt * 4);
@@ -164,6 +181,7 @@ export function buildWorld() {
       put(S, idx++, d0 * r, d1 * r, d2 * r, d0, d1, d2, s === 1 ? -1.25 : s === 2 ? -0.6 : -1.05, s === 1 ? 1 : 0);
       k++;
     }
+    // flights: a raised great-circle arc growing from one city to the other
     for (let a = 0; a < ARCS; a++) {
       const f = flights[a];
       if (!f) {
@@ -183,12 +201,15 @@ export function buildWorld() {
     }
   };
   S.caption = () =>
-    `fig. 3  a simulated outbreak spreading between cities   day ${pad3(day)}   ${reached.length} ${reached.length === 1 ? "city" : "cities"}, latest ${latest}`;
+    `a simulated outbreak spreading between cities   day ${pad3(day)}   ${reached.length} ${reached.length === 1 ? "city" : "cities"}, latest ${latest}`;
   S.view = { spin: 0.12, yaw0: 0, sway: 0, pitch: 0.3, zoom: 1 };
-  for (let k = 0; k < 40; k++) S.update(0, 0.1);
+  for (let k = 0; k < 40; k++) S.update(0, 0.1); // open with the outbreak under way
   return S;
 }
 
+// ---------------------------------------------------------------- bayesian: posterior surface
+// Sequential Bayesian updating: as observations accumulate, a posterior density over two
+// parameters narrows onto its mode and a competing mode fades.
 export function buildPosterior() {
   const S = makeShape();
   const G = 126;
@@ -226,23 +247,31 @@ export function buildPosterior() {
     for (let i = idx; i < N; i++) put(S, i, -1.1, -0.45, -1.1, 0, 1, 0, -0.6, 0);
   };
   S.caption = () =>
-    `fig. 3  sequential Bayesian updating   n = ${pad3(nObs)}   high-density region marked`;
+    `sequential Bayesian updating   n = ${pad3(nObs)}   high-density region marked`;
   S.view = { spin: 0.12, yaw0: 0.6, sway: 0, pitch: 0.55, zoom: 0.6 };
   S.update(6);
   return S;
 }
 
+// ---------------------------------------------------------------- language models: manifold learning
+// A Swiss roll, the classic test surface of manifold learning: a sheet wound into a spiral
+// that slowly unrolls flat and winds back up, as dimensionality-reduction methods flatten data
+// lying on a curled surface. The sheet's cross-section is a curve whose tangent angle is
+// (1 - lambda) times that of the rolled spiral (an Archimedean spiral r = a theta): lambda = 0
+// is the roll, lambda = 1 a flat sheet, and in between it uncoils from both ends. Red stripes
+// across the sheet wind round with it and lie evenly spaced when it is flat.
 export function buildSwissRoll() {
   const S = makeShape();
-  const TH0 = Math.PI, TH1 = 3.5 * Math.PI;
-  const LEN = 2.4;
-  const WIDE = 0.85;
-  const NU = 240, NV = 64;
+  const TH0 = Math.PI, TH1 = 3.5 * Math.PI; // the spiral's angular range (1.25 turns)
+  const LEN = 2.4; // length of the sheet
+  const WIDE = 0.85; // its width, along the roll's axis
+  const NU = 240, NV = 64; // samples along and across
   const STRIPES = 6;
-  const ROLL = 4, FLAT = 1.5;
+  const ROLL = 4, FLAT = 1.5; // seconds to unroll (and to roll), and to rest at each end
   const sm = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
+  // tangent angle of the rolled spiral at NU equal steps of arc length
   const FINE = 4000;
-  const a = 1;
+  const a = 1; // the spiral's scale; arc length is rescaled to LEN below
   const sx = [], sy = [];
   for (let k = 0; k <= FINE; k++) {
     const th = TH0 + ((TH1 - TH0) * k) / FINE;
@@ -252,7 +281,7 @@ export function buildSwissRoll() {
   const cum = [0];
   for (let k = 1; k <= FINE; k++) cum.push(cum[k - 1] + Math.hypot(sx[k] - sx[k - 1], sy[k] - sy[k - 1]));
   const total = cum[FINE];
-  const phi = new Float64Array(NU);
+  const phi = new Float64Array(NU); // unwrapped tangent angle at each sample
   {
     let k = 1, prev = null, turn = 0;
     for (let i = 0; i < NU; i++) {
@@ -277,6 +306,7 @@ export function buildSwissRoll() {
     const u = t % cyc;
     winding = u >= ROLL + FLAT && u < 2 * ROLL + FLAT;
     lambda = u < ROLL ? sm(u / ROLL) : u < ROLL + FLAT ? 1 : u < 2 * ROLL + FLAT ? 1 - sm((u - ROLL - FLAT) / ROLL) : 0;
+    // the cross-section, built out from its middle
     for (let i = 0; i < NU; i++) ang[i] = (1 - lambda) * (phi[i] - mid);
     const m = NU >> 1;
     cx[m] = 0;
@@ -303,24 +333,29 @@ export function buildSwissRoll() {
       const f = i / (NU - 1);
       const stripe = (f * STRIPES) % 1 < 0.07 || f > 0.99;
       const nx = -Math.sin(ang[i]), ny = Math.cos(ang[i]);
-      const fl = -(0.7 + 0.55 * f);
+      const fl = -(0.7 + 0.55 * f); // brighter towards the outer end
       for (let j = 0; j < NV; j++) {
         const z = -WIDE / 2 + (WIDE * (j + 0.5)) / NV;
-        const edge = j === 0 || j === NV - 1;
+        const edge = j === 0 || j === NV - 1; // the end edges trace the spiral
         put(S, idx++, cx[i] - mx, cy[i] - my - 0.05, z, nx, ny, 0, edge ? 0.95 : fl, stripe ? 1 : 0);
       }
     }
     park(S, idx, cx[NU >> 1] - mx, cy[NU >> 1] - my - 0.05, 0);
-    S.view.zoom = 1.05 - 0.25 * lambda;
+    S.view.zoom = 1.05 - 0.25 * lambda; // closer on the roll, back for the flat sheet
   };
   S.caption = () =>
-    `fig. 3  manifold learning   a Swiss roll ${lambda > 0.98 ? "unrolled flat" : lambda < 0.02 ? "rolled up" : winding ? "rolling up" : "unrolling"}: neighbours on the sheet stay neighbours`;
+    `manifold learning   a Swiss roll ${lambda > 0.98 ? "unrolled flat" : lambda < 0.02 ? "rolled up" : winding ? "rolling up" : "unrolling"}: neighbours on the sheet stay neighbours`;
   S.view = { spin: 0, yaw0: 0.3, sway: 0.2, pitch: 0.38, zoom: 1.05 };
-  S.twoSided = true;
+  S.twoSided = true; // a thin sheet: light whichever face is toward us
   S.update(1.2);
   return S;
 }
 
+// ---------------------------------------------------------------- clinical: red blood cells
+// Red blood cells tumbling. Each is the biconcave disc of Evans & Fung (1972): at distance r
+// from the axis, as a fraction of the cell radius, the half-thickness is
+//   (R / 2) sqrt(1 - r^2) (C0 + C1 r^2 + C2 r^4),  C0 = 0.2072, C1 = 2.0026, C2 = -1.1228,
+// thin at the centre (the dimple) and thickest near the rim.
 export function buildBloodCells() {
   const S = makeShape();
   const CELLS = 7;
@@ -330,15 +365,16 @@ export function buildBloodCells() {
   const C0 = 0.2072;
   const C1 = 2.0026;
   const C2 = -1.1228;
+  // one cell in its own frame: surface points and normals, top face then bottom face
   const base = new Float32Array(PER * 3);
   const bnrm = new Float32Array(PER * 3);
   for (let j = 0; j < HALF; j++) {
-    const r = Math.min(0.995, Math.sqrt((j + 0.5) / HALF));
+    const r = Math.min(0.995, Math.sqrt((j + 0.5) / HALF)); // even over the face
     const a = j * 2.399963229728653;
     const s = Math.sqrt(1 - r * r);
     const poly = C0 + C1 * r * r + C2 * r ** 4;
     const h = (R / 2) * s * poly;
-    const dh = (1 / 2) * ((-r / s) * poly + s * (2 * C1 * r + 4 * C2 * r ** 3));
+    const dh = (1 / 2) * ((-r / s) * poly + s * (2 * C1 * r + 4 * C2 * r ** 3)); // dh / d(distance)
     for (const side of [1, -1]) {
       const i = (side === 1 ? j : HALF + j) * 3;
       const l = Math.hypot(dh, 1);
@@ -373,6 +409,7 @@ export function buildBloodCells() {
       const ox = cell.at[0];
       const oy = cell.at[1] + 0.04 * Math.sin(0.7 * t + cell.bob);
       const oz = cell.at[2];
+      // rotation about the cell's axis (Rodrigues), as a matrix applied to points and normals
       const c1 = 1 - co;
       const m00 = co + ux * ux * c1, m01 = ux * uy * c1 - uz * si, m02 = ux * uz * c1 + uy * si;
       const m10 = uy * ux * c1 + uz * si, m11 = co + uy * uy * c1, m12 = uy * uz * c1 - ux * si;
@@ -396,7 +433,7 @@ export function buildBloodCells() {
     }
     park(S, idx, cells[0].at[0], cells[0].at[1], cells[0].at[2]);
   };
-  S.caption = () => "fig. 3  red blood cells, Evans-Fung shape   haemoglobin deferral of blood donors, Vox Sang 2026";
+  S.caption = () => "red blood cells, Evans-Fung shape   haemoglobin deferral of blood donors, Vox Sang 2026";
   S.view = { spin: 0.08, yaw0: 0, sway: 0, pitch: 0.15, zoom: 0.9 };
   S.update(0);
   return S;

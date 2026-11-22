@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supun Manathunga · Bayesian methods for infectious disease epidemiology</title>
+<meta name="description" content="Supun Manathunga, PhD candidate in Experimental Medicine at McGill University: Bayesian methods, sequential Monte Carlo, particle filters and machine learning for infectious disease epidemiology.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#173a6a">
+<link rel="canonical" href="https://ssm123ssm.github.io/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!-- what sites show when the link is shared -->
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="Supun Manathunga">
+<meta property="og:title" content="Supun Manathunga">
+<meta property="og:description" content="PhD candidate at McGill: Bayesian methods, sequential Monte Carlo and machine learning for infectious disease epidemiology.">
+<meta property="og:url" content="https://ssm123ssm.github.io/">
+<meta property="og:image" content="https://ssm123ssm.github.io/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The About section: the name as a terminal banner and a short bio, beside an ASCII telescope under the night sky">
+<meta property="profile:first_name" content="Supun">
+<meta property="profile:last_name" content="Manathunga">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Supun Manathunga">
+<meta name="twitter:description" content="PhD candidate at McGill: Bayesian methods, sequential Monte Carlo and machine learning for infectious disease epidemiology.">
+<meta name="twitter:image" content="https://ssm123ssm.github.io/assets/og.jpg">
+<!-- who this is, for search engines (schema.org) -->
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Person", "name": "Supun Manathunga", "url": "https://ssm123ssm.github.io/", "jobTitle": "PhD candidate in Experimental Medicine", "affiliation": {"@type": "CollegeOrUniversity", "name": "McGill University", "url": "https://www.mcgill.ca/"}, "memberOf": {"@type": "Organization", "name": "D3MOD lab", "url": "https://mchi.mcgill.ca/#/labs/d3mod"}, "alumniOf": {"@type": "CollegeOrUniversity", "name": "University of Peradeniya"}, "knowsAbout": ["Bayesian statistics", "Sequential Monte Carlo", "Particle filters", "Infectious disease epidemiology", "Adaptive sampling", "Machine learning"], "sameAs": ["https://scholar.google.com/citations?user=oewW6r4AAAAJ", "https://github.com/ssm123ssm", "https://codepen.io/ssm123ssm"]}</script>
+<link rel="preload" href="assets/fonts/courier-prime-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="about-first night">
+<div id="scene" aria-hidden="true"><pre></pre><pre></pre><pre></pre><pre></pre><pre></pre><pre></pre><pre></pre><pre></pre><pre></pre></div>
+
+<header class="nav">
+  <nav aria-label="Sections">
+    <a href="#about">About</a>
+    <a href="#astro">Astro</a>
+    <a href="#research">Research</a>
+    <a href="#papers">Papers</a>
+    <a href="#projects">Projects</a>
+    <a href="#awards">Awards</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <!-- The page is one terminal session (js/session.js). The visitor's ssh command scrolls away;
+       the banner it prints (the name) stays at the top of the column and the rest scrolls under it. -->
+  <p class="tty ln" id="sshLine" aria-hidden="true"></p>
+  <p class="tty gap" id="sshGap" aria-hidden="true"></p>
+  <div class="tty motd" id="motd"><h1 id="name"><span class="sr-only">Supun Manathunga</span><span class="banner" aria-hidden="true" style="--cols:84"><span> ____    __  __  ____    __  __  __  __</span><span>/\  _`\ /\ \/\ \/\  _`\ /\ \/\ \/\ \/\ \</span><span>\ \,\L\_\ \ \ \ \ \ \L\ \ \ \ \ \ \ `\\ \</span><span> \/_\__ \\ \ \ \ \ \ ,__/\ \ \ \ \ \ , ` \</span><span>   /\ \L\ \ \ \_\ \ \ \/  \ \ \_\ \ \ \`\ \</span><span>   \ `\____\ \_____\ \_\   \ \_____\ \_\ \_\</span><span>    \/_____/\/_____/\/_/    \/_____/\/_/\/_/</span><span>         ______  __  __  ______  ______  __  __  __  __  __  __  ____    ______</span><span> /'\_/`\/\  _  \/\ \/\ \/\  _  \/\__  _\/\ \/\ \/\ \/\ \/\ \/\ \/\  _`\ /\  _  \</span><span>/\      \ \ \L\ \ \ `\\ \ \ \L\ \/_/\ \/\ \ \_\ \ \ \ \ \ \ `\\ \ \ \L\_\ \ \L\ \</span><span>\ \ \__\ \ \  __ \ \ , ` \ \  __ \ \ \ \ \ \  _  \ \ \ \ \ \ , ` \ \ \L_L\ \  __ \</span><span> \ \ \_/\ \ \ \/\ \ \ \`\ \ \ \/\ \ \ \ \ \ \ \ \ \ \ \_\ \ \ \`\ \ \ \/, \ \ \/\ \</span><span>  \ \_\\ \_\ \_\ \_\ \_\ \_\ \_\ \_\ \ \_\ \ \_\ \_\ \_____\ \_\ \_\ \____/\ \_\ \_\</span><span>   \/_/ \/_/\/_/\/_/\/_/\/_/\/_/\/_/  \/_/  \/_/\/_/\/_____/\/_/\/_/\/___/  \/_/\/_/</span></span></h1></div>
+
+  <div class="tty session">
+    <p class="lede" id="line">Bayesian methods, sequential Monte Carlo and machine learning for infectious disease epidemiology.</p>
+    <p class="ln" id="lastLogin" aria-hidden="true"></p>
+  </div>
+
+  <div class="fig-window" id="mobileFigure" aria-hidden="true"></div>
+
+  <section id="about" data-scene="4">
+    <div class="panel">
+      <p class="tty ln cmdline" data-cmd="about" aria-hidden="true"></p>
+      <h2>About</h2>
+      <p id="aboutText">I am a PhD candidate in Experimental Medicine at McGill University, in the <a href="https://mchi.mcgill.ca/#/labs/d3mod" target="_blank" rel="noopener">D3MOD lab</a>. My research interests are Bayesian methods, sequential Monte Carlo and machine learning for infectious disease epidemiology.</p>
+      <p id="background">I obtained my MBBS from the Faculty of Medicine, University of Peradeniya, and worked as a medical doctor in both the curative and preventive health sectors. I then joined the University of Peradeniya as a lecturer, before coming to McGill for my PhD.</p>
+      <p id="hobby">Outside research, I <a href="#astro">photograph the night sky</a>: nebulae, galaxies, comets and the Moon.</p>
+      <p class="links" id="links2"><a href="assets/Supun-Manathunga-CV.pdf" target="_blank" rel="noopener">CV (PDF)</a><a href="https://scholar.google.com/citations?user=oewW6r4AAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a><a href="https://github.com/ssm123ssm" target="_blank" rel="noopener">GitHub</a><a href="https://mchi.mcgill.ca/#/labs/d3mod" target="_blank" rel="noopener">D3MOD lab</a></p>
+    </div>
+  </section>
+
+  <section id="astro" data-scene="4">
+    <div class="panel">
+      <p class="tty ln cmdline" data-cmd="astro" aria-hidden="true"></p>
+      <h2>Astrophotography</h2>
+      <div class="imgcat" id="imgcat">
+        <p class="tty ln" aria-hidden="true"></p>
+        <a class="frame" target="_blank" rel="noopener"><canvas aria-hidden="true"></canvas></a>
+        <p class="cap" aria-live="polite"></p>
+      </div>
+      <ul class="astro-list" id="astroList" aria-label="Photographs"><li><button type="button" data-file="moon-hdr.jpg" title="Moon, HDR, 2023">moon-hdr.jpg</button></li><li><button type="button" data-file="carina-nebula.jpg" title="Carina Nebula, 2023">carina-nebula.jpg</button></li><li><button type="button" data-file="comet-atlas.jpg" title="Comet ATLAS, 2024">comet-atlas.jpg</button></li><li><button type="button" data-file="conjunction.jpg" title="Planetary conjunction at dusk, 2023">conjunction.jpg</button></li><li><button type="button" data-file="full-moon.jpg" title="Full Moon, 2023">full-moon.jpg</button></li><li><button type="button" data-file="horsehead-flame.jpeg" title="Horsehead and Flame nebulae, 2023">horsehead-flame.jpeg</button></li><li><button type="button" data-file="leo-triplet.jpg" title="Leo Triplet, 2023">leo-triplet.jpg</button></li><li><button type="button" data-file="pleiades.jpg" title="Pleiades (M45), 2022">pleiades.jpg</button></li><li><button type="button" data-file="milky-way.jpg" title="Milky Way, 2023">milky-way.jpg</button></li><li><button type="button" data-file="orion-nebula.jpg" title="Orion Nebula, 2023">orion-nebula.jpg</button></li><li><button type="button" data-file="orion-sword.jpg" title="Orion's sword, 2023">orion-sword.jpg</button></li><li><button type="button" data-file="orion-belt.jpg" title="Orion's belt and sword, 2023">orion-belt.jpg</button></li><li><button type="button" data-file="gibbous-moon.jpg" title="Waning gibbous Moon, 2024">gibbous-moon.jpg</button></li></ul>
+    </div>
+  </section>
+
+  <section id="research" data-scene="1">
+    <div class="panel">
+      <p class="tty ln cmdline" data-cmd="research" aria-hidden="true"></p>
+      <h2>Research</h2>
+      <div id="themes"><div class="theme"><h3>Epidemic modelling and surveillance</h3><p class="fields">Adaptive sampling / Particle filters / State-space models for infectious disease</p><p>State-space models of infectious disease, fitted with particle filters as surveillance data arrive, and adaptive sampling that uses the model's forecast to set the size of the next round. Earlier work on transmission estimates and outbreak simulation.</p></div><div class="theme"><h3>Bayesian methods</h3><p class="fields">Sequential Monte Carlo / Bayesian assurance / Bayesian meta-analysis</p><p>Sequential Monte Carlo for models that are refitted as data accumulate, and Bayesian assurance for choosing sample sizes, both before a study and round by round during one. Bayesian meta-analysis to pool published clinical evidence.</p></div></div>
+      <p class="fig-note" id="sirNote"><span class="fig-text">This is a live stochastic SIR epidemic on a 120 x 120 grid: each day an infected person infects each neighbour with probability 0.1, rarely someone far away, and recovers with probability 0.15. Tap the grid to start an epidemic there.</span> <a href="js/sir.js" target="_blank" rel="noopener">SIR model code</a></p>
+    </div>
+  </section>
+
+  <section id="top" data-scene="0">
+    <div class="pin">
+      <div class="panel hero">
+        <div class="tty session">
+          <h2>Particle filter</h2>
+          <!-- fig. 1's commands, run by scrolling: a fixed-height screen that scrolls like a terminal -->
+          <div class="term" id="term" aria-hidden="true"></div>
+        </div>
+        <p class="sr-only" id="stageLive" aria-live="polite"></p>
+        <p class="hint" id="stageHint" aria-hidden="true"></p>
+        <p class="fig-note" id="filterNote"><span class="fig-text">This is a real particle filter: 16,000 particles tempered toward a 3D density shaped like the virion, with systematic resampling and Metropolis-Hastings moves.</span> <a href="js/particle-filter.js" target="_blank" rel="noopener">Particle filter code</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="work" data-scene="0">
+    <div class="panel">
+      <p class="tty ln cmdline" data-cmd="work" aria-hidden="true"></p>
+      <article class="spot" id="spot"><p class="tag">Current work</p><h2 class="spot-title">A model-based adaptive sampling framework for infectious disease surveillance</h2><p class="m">S Manathunga, N Osgood, SF O'Brien, DL Buckeridge, WA Russell<br>arXiv:2611.01199, 2026</p><p class="prize"><span class="mark" aria-hidden="true">*</span><a href="https://smdm.org/lee-b-lusted-student-prize-competition/" target="_blank" rel="noopener">Lee B. Lusted Student Prize, SMDM 2026</a><br><span class="m">Quantitative Methods and Theoretical Developments, for the poster &quot;Using a stochastic epidemic model to guide efficient seroprevalence sampling decisions&quot;.</span></p><p>How many samples does the next surveillance round really need? A particle filter keeps a state-space epidemic model up to date as data arrive. Its one-step-ahead prediction feeds a Bayesian assurance criterion, which picks the cheapest design likely to reach a target credible-interval width. Tested in simulation and on SARS-CoV-2 serosurveillance of Canadian blood donors.</p><p class="links"><a href="https://arxiv.org/abs/2611.01199" target="_blank" rel="noopener">Paper</a><a href="https://github.com/ssm123ssm/Adaptive_sampling_public" target="_blank" rel="noopener">Code</a><a href="https://ssm123ssm.github.io/adaptive-sampling/" target="_blank" rel="noopener">Poster supplement</a></p></article>
+    </div>
+  </section>
+
+  <section id="papers" data-scene="2">
+    <div class="panel">
+      <p class="tty ln cmdline" data-cmd="papers" aria-hidden="true"></p>
+      <h2>Papers</h2>
+      <div class="filters" id="filters" role="group" aria-label="Filter papers by topic"><button type="button" data-tag="all" aria-pressed="true">All</button><button type="button" data-tag="epi" aria-pressed="false">Epidemics</button><button type="button" data-tag="bayes" aria-pressed="false">Bayesian</button><button type="button" data-tag="clin" aria-pressed="false">Clinical</button><button type="button" data-tag="ai" aria-pressed="false">Language models</button></div>
+      <ol class="pubs" id="pubs"><li><span class="y">2026</span><div><a class="t" href="https://arxiv.org/abs/2611.01199" target="_blank" rel="noopener">A model-based adaptive sampling framework for infectious disease surveillance</a><span class="m">S Manathunga, N Osgood, SF O'Brien, DL Buckeridge, WA Russell<br>arXiv:2611.01199</span></div></li><li><span class="y">2026</span><div><a class="t" href="https://arxiv.org/abs/2602.14877" target="_blank" rel="noopener">When to repeat a biomarker test? Decomposing sources of variation from conditionally repeated measurements</a><span class="m">S Manathunga, MP Janssen, Y Luo, WA Russell, M Pothast<br>arXiv:2602.14877</span></div></li><li><span class="y">2026</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22Potential%20benefits%20of%20an%20alternative%20haemoglobin%20deferral%20strategy%20evaluated%20in%20seven%20countries%22" target="_blank" rel="noopener">Potential benefits of an alternative haemoglobin deferral strategy evaluated in seven countries</a><span class="m">A Meulenbeld, C Styles, G Shuttleworth, S Manathunga, H van Remoortel, et al.<br>Vox Sanguinis 121(1), 26-34 / <span class="c">cited 4</span></span></div></li><li><span class="y">2026</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22Silent%20cardiometabolic%20risk%20among%20university%20entrance%20students%20in%20a%20South%20Asian%20country%2C%20Sri%20Lanka%3A%20an%20urgent%20call%20for%20early%20intervention%22" target="_blank" rel="noopener">Silent cardiometabolic risk among university entrance students in a South Asian country, Sri Lanka: an urgent call for early intervention</a><span class="m">G Amiyangoda, S Manathunga, C Ratnatunga, C Herath, C Gamagedara, et al.<br>Atherosclerosis 419</span></div></li><li><span class="y">2026</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22Evaluation%20of%20the%20efficacy%20of%20the%20Sampson%20equation%20for%20LDL-C%3A%20single-centre%20study%20at%20a%20tertiary%20care%20hospital%20in%20Sri%20Lanka%22" target="_blank" rel="noopener">Evaluation of the efficacy of the Sampson equation for LDL-C: single-centre study at a tertiary care hospital in Sri Lanka</a><span class="m">M Balasooriya, K Basnayake, N Galmangodage, S Manathunga, et al.<br>Asian Journal of Internal Medicine 5(2), 15-24</span></div></li><li><span class="y">2025</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22Epidemiology%20of%20pediatric%20functional%20abdominal%20pain%20disorders%3A%20a%20meta-analysis%22" target="_blank" rel="noopener">Epidemiology of pediatric functional abdominal pain disorders: a meta-analysis</a><span class="m">N Koen Vermeijden, L de Silva, S Manathunga, D Spoolder, J Korterink, et al.<br>Pediatrics 155(2), e2024067677 / <span class="c">cited 63</span></span></div></li><li><span class="y">2025</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22Artificial%20intelligence%20assisted%20automated%20short%20answer%20question%20scoring%20tool%20shows%20high%20correlation%20with%20human%20examiner%20markings%22" target="_blank" rel="noopener">Artificial intelligence assisted automated short answer question scoring tool shows high correlation with human examiner markings</a><span class="m">H Seneviratne, SS Manathunga<br>BMC Medical Education 25(1), 1146 / <span class="c">cited 41</span></span></div></li><li><span class="y">2025</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22How%20do%20we%20define%20normal%20bowel%20frequency%20from%20newborn%20to%20teens%3F%20A%20Bayesian%20meta-analysis%22" target="_blank" rel="noopener">How do we define normal bowel frequency from newborn to teens? A Bayesian meta-analysis</a><span class="m">S Munasinghe, S Manathunga, W Hathagoda, C Kuruppu, P Ranasinghe, et al.<br>J Pediatr Gastroenterol Nutr 80(4), 569-579 / <span class="c">cited 8</span></span></div></li><li><span class="y">2025</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22Artificial%20intelligence%20based%20personalized%20student%20feedback%20system%3A%20Sisu%20Athwala%2C%20to%20enhance%20exam%20performance%20of%20medical%20undergraduates%22" target="_blank" rel="noopener">Artificial intelligence based personalized student feedback system: Sisu Athwala, to enhance exam performance of medical undergraduates</a><span class="m">T Seneviratne, S Manathunga, W Idirisingha, K Somaratne, K Marambe, et al.<br>PLoS ONE 20(12), e0336154 / <span class="c">cited 6</span></span></div></li><li><span class="y">2025</span><div><a class="t" href="https://arxiv.org/abs/2509.14213" target="_blank" rel="noopener">PoPStat-COVID19: leveraging population pyramids to quantify demographic vulnerability to COVID-19</a><span class="m">B Wijenayake, A Ratnayake, L Edirisinghe, U Wijeratne, T Fonseka, R Godaliyadda, S Dharmaratne, P Ekanayake, V Herath, I Alwis, S Manathunga<br>arXiv:2509.14213</span></div></li><li><span class="y">2025</span><div><a class="t" href="https://arxiv.org/abs/2501.11514" target="_blank" rel="noopener">Devising popstat: a metric bridging population pyramids with global disease mortality</a><span class="m">T Fonseka, B Wijenayake, A Ratnayake, I Alwis, S Manathunga, et al.<br>arXiv:2501.11514 / <span class="c">cited 1</span></span></div></li><li><span class="y">2025</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22Effectiveness%20of%20adrenal%20venous%20sampling%20in%20the%20management%20of%20primary%20aldosteronism%3A%20single-centered%20cross-sectional%20study%20at%20a%20tertiary%20care%20hospital%20in%20Sri%20Lanka%22" target="_blank" rel="noopener">Effectiveness of adrenal venous sampling in the management of primary aldosteronism: single-centered cross-sectional study at a tertiary care hospital in Sri Lanka</a><span class="m">C Balasooriya, S Manathunga, S Nagaratnam, S Ozaal, et al.<br>J ASEAN Fed Endocr Soc 40(2), 126 / <span class="c">cited 1</span></span></div></li><li><span class="y">2024</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22Antibiotic%20prescription%20in%20critical%20care%20units%20in%20Sri%20Lanka%3A%20a%20prospective%20multi-centre%20survey%22" target="_blank" rel="noopener">Antibiotic prescription in critical care units in Sri Lanka: a prospective multi-centre survey</a><span class="m">D Priyankara, A Mudalige, M Lokuge, W Samaranayake, E Sanjeeva, et al.<br>Ceylon Medical Journal 69(SI3) / <span class="c">cited 2</span></span></div></li><li><span class="y">2024</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22A%20comparative%20study%20on%20outcomes%20of%20fasting%20vs%20postprandial%20thyroid%20function%20tests%20among%20pregnant%20mothers%20in%20a%20tertiary%20care%20setting%20in%20Sri%20Lanka%22" target="_blank" rel="noopener">A comparative study on outcomes of fasting vs postprandial thyroid function tests among pregnant mothers in a tertiary care setting in Sri Lanka</a><span class="m">SB Mohideen, T Herath, S Manathunga<br>Laboratory Medicine 55(3), 320-324 / <span class="c">cited 1</span></span></div></li><li><span class="y">2024</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22Comparison%20of%20the%20effectiveness%20and%20safety%20of%20hydroxychloroquine%20and%20methotrexate%20in%20the%20treatment%20of%20moderate-to-severe%20oral%20lichen%20planus%3A%20a%20pilot%20study%22" target="_blank" rel="noopener">Comparison of the effectiveness and safety of hydroxychloroquine and methotrexate in the treatment of moderate-to-severe oral lichen planus: a pilot study</a><span class="m">S Gnanarathne, S Fonseka, SS Manathunga, R Jayasinghe, et al.<br>J Oral Health Community Dent 17(3), 116-120 / <span class="c">cited 1</span></span></div></li><li><span class="y">2023</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22A%20comparison%20of%20transmissibility%20of%20SARS-CoV-2%20variants%20of%20concern%22" target="_blank" rel="noopener">A comparison of transmissibility of SARS-CoV-2 variants of concern</a><span class="m">SS Manathunga, IA Abeyagunawardena, SD Dharmaratne<br>Virology Journal 20(1), 59 / <span class="c">cited 115</span></span></div></li><li><span class="y">2023</span><div><a class="t" href="https://arxiv.org/abs/2308.00479" target="_blank" rel="noopener">Retrieval augmented generation and representative vector summarization for large unstructured textual data in medical education</a><span class="m">SS Manathunga, YA Illangasekara<br>arXiv:2308.00479 / <span class="c">cited 36</span></span></div></li><li><span class="y">2023</span><div><a class="t" href="https://arxiv.org/abs/2309.02884" target="_blank" rel="noopener">Aligning large language models for clinical tasks</a><span class="m">S Manathunga, I Hettigoda<br>arXiv:2309.02884 / <span class="c">cited 20</span></span></div></li><li><span class="y">2022</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22A%20stochastic%20process%20based%20modular%20tool-box%20for%20simulating%20COVID-19%20infection%20spread%22" target="_blank" rel="noopener">A stochastic process based modular tool-box for simulating COVID-19 infection spread</a><span class="m">SS Manathunga, IA Abeyagunawardena, SD Dharmaratne<br>Informatics in Medicine Unlocked 29, 100899 / <span class="c">cited 1</span></span></div></li><li><span class="y">2022</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22Prediction%20of%20gestational%20diabetes%20mellitus%20using%20early%20oral%20glucose%20tolerance%20test%22" target="_blank" rel="noopener">Prediction of gestational diabetes mellitus using early oral glucose tolerance test</a><span class="m">C Kandauda, SS Manathunga, IA Abeyagunawardena, K Thilakarathne<br>medRxiv 2022.03.29.22273154 / <span class="c">cited 1</span></span></div></li><li><span class="y">2022</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22Health-related%20quality%20of%20life%2C%20personality%20and%20psychological%20maladjustment%2C%20emotional%20and%20behavioural%20problems%2C%20and%20family%20impact%20in%20children%20with%20nephrotic%20syndrome%20(abstract)%22" target="_blank" rel="noopener">Health-related quality of life, personality and psychological maladjustment, emotional and behavioural problems, and family impact in children with nephrotic syndrome (abstract)</a><span class="m">R Ranawaka, P Chathurangana, H Liyanaarachchi, P Dissanayake, et al.<br>Arch Dis Child 107 (Suppl 2), A99 / <span class="c">cited 2</span></span></div></li><li><span class="y">2020</span><div><a class="t" href="https://scholar.google.com/scholar?q=%22Estimation%20of%20the%20basic%20reproduction%20number%20(R0)%20for%20the%20novel%20coronavirus%20disease%20in%20Sri%20Lanka%22" target="_blank" rel="noopener">Estimation of the basic reproduction number (R0) for the novel coronavirus disease in Sri Lanka</a><span class="m">S Dharmaratne, S Sudaraka, I Abeyagunawardena, K Manchanayake, et al.<br>Virology Journal 17(1), 144 / <span class="c">cited 76</span></span></div></li></ol>
+    </div>
+  </section>
+
+  <section id="projects" data-scene="3">
+    <div class="panel">
+      <p class="tty ln cmdline" data-cmd="projects" aria-hidden="true"></p>
+      <h2>Projects</h2>
+      <ul class="projects" id="projectList"><li><div class="head"><h3>This portfolio</h3><span class="stack">JavaScript</span></div><p>This site, written as a terminal session. The figures come from a small renderer that draws 3D point clouds as ASCII characters, without libraries. The particle filter is a real sequential Monte Carlo sampler: 16,000 particles tempered toward a 3D density of the virion, with systematic resampling and Metropolis-Hastings moves, checked against exact draws. The research figure shows a stochastic SIR epidemic on a 120 x 120 grid, run live.</p><div class="go links"><a href="js/ascii.js" target="_blank" rel="noopener">Renderer</a><a href="js/particle-filter.js" target="_blank" rel="noopener">Particle filter</a><a href="tools/check-filter.mjs" target="_blank" rel="noopener">Check script</a><a href="js/sir.js" target="_blank" rel="noopener">SIR model</a></div></li><li><div class="head"><h3>adaptive-sampling</h3><span class="stack">R / HTML</span></div><p>Using a stochastic epidemic model to guide efficient seroprevalence sampling decisions.</p><div class="go links"><a href="https://ssm123ssm.github.io/adaptive-sampling/" target="_blank" rel="noopener">Live site</a><a href="https://github.com/ssm123ssm/adaptive-sampling" target="_blank" rel="noopener">Source</a></div></li><li><div class="head"><h3>MEDAC poster</h3><span class="stack">HTML</span></div><p>Sequential Bayesian assurance for adaptive data collection in mechanistic state-space models.</p><div class="go links"><a href="https://ssm123ssm.github.io/MEDAC_poster/" target="_blank" rel="noopener">Live site</a><a href="https://github.com/ssm123ssm/MEDAC_poster" target="_blank" rel="noopener">Source</a></div></li><li><div class="head"><h3>Dengue Watch</h3><span class="stack">R / Shiny</span></div><p>An interactive dashboard of dengue in the Gothatuwa MOH area, showing trends of spread and hotspots.</p><div class="go links"><a href="https://supun-manathunga.shinyapps.io/Dengue_Watch/" target="_blank" rel="noopener">Live site</a></div></li><li><div class="head"><h3>HLA matcher</h3><span class="stack">R / Shiny</span></div><p>Finds potential bone marrow donor matches by HLA type, for Thalassemia Circle Sri Lanka, a not-for-profit organization.</p><div class="go links"><a href="https://supun-manathunga.shinyapps.io/HLA_matcher/" target="_blank" rel="noopener">Live site</a></div></li><li><div class="head"><h3>Assurance paper</h3><span class="stack">Python</span></div><p>Companion assets for the paper on nonmonotone precision assurance in Bayesian sample size determination for binomial proportions.</p><div class="go links"><a href="https://github.com/ssm123ssm/Assurance_paper" target="_blank" rel="noopener">Source</a></div></li><li><div class="head"><h3>global-health-101</h3><span class="stack">TypeScript</span></div><p>Analysis of 84 global health course syllabi from the USA and Canada for decolonial framing, equity and epistemic justice, with an in-browser tool to score your own syllabus.</p><div class="go links"><a href="https://ssm123ssm.github.io/global-health-101/" target="_blank" rel="noopener">Live site</a><a href="https://github.com/ssm123ssm/global-health-101" target="_blank" rel="noopener">Source</a></div></li><li><div class="head"><h3>NCD Rust</h3><span class="stack">Rust / Tauri / React</span></div><p>Desktop application for exploring non-communicable disease admission trends in Sri Lanka: admissions, crude rates and standardized rates.</p><div class="go links"><a href="https://github.com/ssm123ssm/NCD_rust" target="_blank" rel="noopener">Source</a></div></li><li><div class="head"><h3>Sisu Athwala</h3><span class="stack">JavaScript</span></div><p>Exam performance monitoring and automatic essay scoring for the Faculty of Medicine, University of Peradeniya.</p><div class="go links"><a href="https://sisu-athwala.vercel.app" target="_blank" rel="noopener">Live site</a><a href="https://github.com/ssm123ssm/sisu-athwala" target="_blank" rel="noopener">Source</a></div></li><li><div class="head"><h3>docGPT</h3><span class="stack">Python</span></div><p>Document intelligence over unstructured files: retrieval and summarization, written as an abstraction over langchain.</p><div class="go links"><a href="https://github.com/ssm123ssm/docGPT-pharm" target="_blank" rel="noopener">Source</a></div></li><li><div class="head"><h3>Preview</h3><span class="stack">Next.js</span></div><p>Publish content from private GitHub repositories as authenticated websites.</p><div class="go links"><a href="https://preview-public.vercel.app" target="_blank" rel="noopener">Live site</a><a href="https://github.com/ssm123ssm/preview_public" target="_blank" rel="noopener">Source</a></div></li><li><div class="head"><h3>mailer</h3><span class="stack">Node</span></div><p>A free form-data to email platform: receive form submissions in your inbox without writing server-side code.</p><div class="go links"><a href="https://github.com/ssm123ssm/mailer" target="_blank" rel="noopener">Source</a></div></li><li><div class="head"><h3>CodePen</h3><span class="stack">HTML / CSS / JS</span></div><p>Smaller pieces in HTML, CSS and JavaScript.</p><div class="go links"><a href="https://codepen.io/ssm123ssm" target="_blank" rel="noopener">codepen.io/ssm123ssm</a></div></li></ul>
+    </div>
+  </section>
+
+  <section id="awards" data-scene="3">
+    <div class="panel">
+      <p class="tty ln cmdline" data-cmd="awards" aria-hidden="true"></p>
+      <h2>Awards</h2>
+      <ul class="pubs awards" id="awardList"><li><span class="y">2026</span><div><a class="t" href="https://smdm.org/lee-b-lusted-student-prize-competition/" target="_blank" rel="noopener">Lee B. Lusted Student Prize</a><span class="m">Society for Medical Decision Making, 48th Annual Meeting, Oslo: Quantitative Methods and Theoretical Developments</span></div></li><li><span class="y">2026</span><div><a class="t" href="https://ai4ph-hrtp.ca/trainees/" target="_blank" rel="noopener">AI4PH Trainee Scholarship</a><span class="m">AI4PH (Artificial Intelligence for Public Health) Health Research Training Platform, 2026-27</span></div></li><li><span class="y">2026</span><div><span class="t">Graduate Research Enhancement and Travel Award</span><span class="m">McGill University, to present at SMDM 2026</span></div></li><li><span class="y">2025</span><div><a class="t" href="https://www.mcgill.ca/gps/funding/achievements/tomlinson-doctoral-fellowships" target="_blank" rel="noopener">Richard H. Tomlinson Doctoral Fellowship</a><span class="m">McGill University, 2025-26</span></div></li><li><span class="y">2025</span><div><a class="t" href="https://doi.org/10.69777/373650" target="_blank" rel="noopener">FRQS Master's Scholarship</a><span class="m">Fonds de recherche du Québec - Santé, 2025-2026</span></div></li><li><span class="y">2025</span><div><a class="t" href="https://www.ohapcreate.ca/trainees" target="_blank" rel="noopener">NSERC CREATE in One Health Against Pathogens (OHAP)</a><span class="m">Trainee, 2025-2028</span></div></li><li><span class="y">2024</span><div><span class="t">University Research Grant, principal investigator</span><span class="m">University of Peradeniya, 2024-2026: predicting plasma leakage in dengue haemorrhagic fever</span></div></li><li><span class="y">2022-25</span><div><span class="t">Presentation and research awards</span><span class="m">At academic sessions in Sri Lanka, among them the Research Excellence Award of the Peradeniya Medical School Annual Research Congress (2024)</span></div></li></ul>
+    </div>
+  </section>
+
+  <section id="contact" data-scene="4">
+    <div class="panel">
+      <p class="tty ln cmdline" data-cmd="contact" aria-hidden="true"></p>
+      <h2>Contact</h2>
+      <form class="mail tty" id="mailForm" novalidate>
+        <p class="intro" id="mailIntro">Write to me here and I will reply by email.</p>
+        <div class="row"><label for="mailFrom">From:</label><input id="mailFrom" name="email" type="email" required autocomplete="email" spellcheck="false" placeholder="you@example.com"></div>
+        <div class="row"><label for="mailSubject">Subject:</label><input id="mailSubject" name="subject" type="text" maxlength="140" autocomplete="off"></div>
+        <div class="field"><label for="mailBody">Message (Ctrl+Enter to send):</label>
+          <div class="body"><span class="gt" aria-hidden="true">&gt;</span><textarea id="mailBody" name="message" rows="6" required></textarea></div></div>
+        <input class="hp" name="_gotcha" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <p class="send"><button type="submit">[ send ]</button></p>
+        <p class="status" id="mailStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<p id="caption" aria-hidden="true"></p>
+<!-- Note that follows the cursor over the hero's particles; the panel carries the same text for everyone else. -->
+<div id="tip" aria-hidden="true"></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

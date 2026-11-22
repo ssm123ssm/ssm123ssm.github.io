@@ -1,3 +1,4 @@
+/* One face throughout, as in a terminal: Courier Prime (SIL Open Font License; see assets/fonts). */
 @font-face { font-family: "Courier Prime"; font-style: normal; font-weight: 400; font-display: swap;
   src: url(../assets/fonts/courier-prime-400-latin-ext.woff2) format("woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
@@ -11,6 +12,9 @@
   src: url(../assets/fonts/courier-prime-700-latin.woff2) format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 
+/* Cyanotype: white and blueprint blue, with a yellow accent.
+   The palette is registered as colours so it can fade: at the bottom of the page (About, under
+   fig. 5's night sky) the page turns to a night palette and the stars glow. */
 @property --bg { syntax: "<color>"; inherits: true; initial-value: #173a6a; }
 @property --ink { syntax: "<color>"; inherits: true; initial-value: #f2f5fa; }
 @property --soft { syntax: "<color>"; inherits: true; initial-value: #b8c7e0; }
@@ -26,17 +30,19 @@
   --accent: #ffd166;
   --rule: #24497f;
   --mono: "Courier Prime", "Courier New", monospace;
-  --text: var(--mono);
-  --display: var(--text);
+  --text: var(--mono); /* running text */
+  --display: var(--text); /* headings */
   color-scheme: dark;
   --cell: 12px;
   --row: 14px;
+  /* set by main.js from the layout: the nav's height, and where the fixed banner ends */
   --nav-h: 50px;
   --motd: 270px;
 }
 @media (max-width: 899px) {
   :root { --cell: 10px; --row: 12px; }
 }
+/* phones: smaller characters, so the figures keep some detail in a narrow window */
 @media (max-width: 599px) {
   :root { --cell: 7px; --row: 8px; }
 }
@@ -58,9 +64,10 @@ body.night #scene pre:nth-child(1) { text-shadow: 0 0 4px color-mix(in srgb, var
 body.night #scene pre:nth-child(2) { text-shadow: 0 0 5px color-mix(in srgb, var(--ink) 45%, transparent); }
 body.night #scene pre:nth-child(3) { text-shadow: 0 0 7px var(--accent), 0 0 2px var(--accent); }
 body.night #scene pre:nth-child(n+4) { text-shadow: 0 0 5px color-mix(in srgb, currentColor 55%, transparent); }
-body.seed { cursor: crosshair; }
+body.seed { cursor: crosshair; } /* over fig. 2's grid, where a click starts an epidemic */
 body.dragging { cursor: grabbing; user-select: none; -webkit-user-select: none; }
 .panel, .nav { cursor: auto; }
+/* no text boosting on phones: it can size each layer of a scene differently, pulling them apart */
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
   margin: 0;
@@ -73,6 +80,7 @@ a { color: inherit; text-decoration-color: var(--dim); text-underline-offset: 3p
 a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 :focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
 
+/* ---- ascii scene ---- */
 #scene {
   position: fixed; inset: 0; overflow: hidden;
   pointer-events: none; user-select: none; -webkit-user-select: none;
@@ -87,12 +95,14 @@ a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 #scene pre:nth-child(1) { color: var(--dim); }
 #scene pre:nth-child(2) { color: var(--ink); }
 #scene pre:nth-child(3) { color: var(--accent); }
+/* a photograph's hues, when fig. 5 shows one: red, orange, teal, blue, violet, pink */
 #scene pre:nth-child(4) { color: #ff6f6f; }
 #scene pre:nth-child(5) { color: #ffa860; }
 #scene pre:nth-child(6) { color: #6fd8c8; }
 #scene pre:nth-child(7) { color: #7cb3ff; }
 #scene pre:nth-child(8) { color: #b59cff; }
 #scene pre:nth-child(9) { color: #ff86d3; }
+
 
 #caption {
   position: fixed; right: 20px; bottom: 14px; margin: 0;
@@ -106,21 +116,24 @@ a:hover { color: var(--accent); text-decoration-color: var(--accent); }
   clip-path: inset(50%); white-space: nowrap;
 }
 
+/* Note that follows the cursor over the hero's particles (mouse devices). */
 #tip {
   position: fixed; left: 0; top: 0; z-index: 3; margin: 0;
   max-width: 24em; padding: 7px 10px;
   font-size: 12px; line-height: 1.5; color: var(--soft);
-  background: var(--bg);
+  background: var(--bg); /* solid: the particles behind would show through the text */
   border: 1px solid var(--rule);
   pointer-events: none; opacity: 0; transition: opacity 0.15s;
 }
 #tip.on { opacity: 1; }
+/* over fig. 2: the model note, then the epidemic curve (a text histogram) setting the width */
 #tip.chart { max-width: none; width: max-content; }
 #tip .tip-text { width: 0; min-width: 100%; margin: 0 0 8px; }
 #tip .tip-chart { margin: 0; font-size: inherit; line-height: 1.3; white-space: pre; }
 #tip .tip-hint { width: 0; min-width: 100%; margin: 8px 0 0; color: color-mix(in srgb, var(--accent) 70%, var(--soft)); }
 #tip .bar { color: var(--ink); }
 #tip .now { color: var(--accent); }
+/* With a mouse, a figure note's sentence lives in #tip; it stays here for screen readers. */
 @media (hover: hover) and (pointer: fine) {
   .fig-note .fig-text {
     position: absolute; width: 1px; height: 1px; overflow: hidden;
@@ -128,6 +141,7 @@ a:hover { color: var(--accent); text-decoration-color: var(--accent); }
   }
 }
 
+/* ---- chrome ---- */
 .nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 2;
   display: flex; justify-content: flex-end; gap: 16px;
@@ -145,7 +159,10 @@ main {
   margin-left: clamp(16px, 7vw, 110px);
   padding-top: calc(var(--nav-h) + 18px);
 }
+/* Each section is a screen's worth of terminal below the banner: its prompt at the top, its
+   output under it. */
 section { min-height: calc(100vh - var(--motd)); padding: 0 0 72px; scroll-margin-top: var(--motd); }
+/* Hero scroll track: the extra height is the scroll distance that runs the particle filter. */
 #top { height: calc(100vh + 240vh); padding: 0; }
 #top .pin { position: sticky; top: var(--motd); height: calc(100vh - var(--motd)); padding: 0 0 24px; }
 #top .panel { background: color-mix(in srgb, var(--bg) 62%, transparent); box-shadow: -24px 0 0 color-mix(in srgb, var(--bg) 62%, transparent); }
@@ -166,6 +183,8 @@ p { margin: 0 0 16px; }
   animation: blink 1.1s steps(1) infinite;
 }
 @keyframes blink { 50% { opacity: 0; } }
+/* ---- the terminal (js/session.js): one face and size throughout, and a blank line between
+   the parts, as a terminal prints them */
 .tty { font: 15px/1.5 var(--mono); color: var(--soft); }
 .tty p, .tty h1, p.tty { margin: 0; }
 .tty.ln, .tty .ln { white-space: pre; overflow: hidden; text-overflow: ellipsis; }
@@ -179,17 +198,26 @@ p { margin: 0 0 16px; }
 .tty .caret { margin-left: 0; width: 0.6em; height: 1.2em; }
 .tty .caret.solid { animation: none; }
 
+/* The ssh line scrolls away above the banner (it is drawn over the banner's backing while it
+   does); the banner stays under the nav, on the page colour, fading out at its right and bottom
+   edges, and the rest of the page scrolls under it. */
 #sshLine, #sshGap { position: relative; z-index: 3; }
+main { --banner-fade: 26px; }
 .motd { position: sticky; top: var(--nav-h); z-index: 2; padding: 4px 0 6px; container-type: inline-size; }
 .motd::before {
   content: ""; position: absolute; z-index: -1;
-  top: calc(-1 * var(--nav-h)); bottom: -26px; left: -140px; right: -56px;
+  top: calc(-1 * var(--nav-h)); bottom: calc(-1 * var(--banner-fade)); left: -140px; right: -56px;
   background: var(--bg);
-  -webkit-mask-image: linear-gradient(#000 calc(100% - 26px), transparent), linear-gradient(to right, #000 calc(100% - 56px), transparent);
+  -webkit-mask-image: linear-gradient(#000 calc(100% - var(--banner-fade)), transparent), linear-gradient(to right, #000 calc(100% - 56px), transparent);
   -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(#000 calc(100% - 26px), transparent), linear-gradient(to right, #000 calc(100% - 56px), transparent);
+  mask-image: linear-gradient(#000 calc(100% - var(--banner-fade)), transparent), linear-gradient(to right, #000 calc(100% - 56px), transparent);
   mask-composite: intersect;
 }
+@media (min-width: 900px) {
+  .motd + .session { padding-top: var(--banner-fade); }
+}
+/* the name as a figlet banner, sized so its widest row fills the column (Courier Prime is 0.6em
+   wide), never larger than 12px */
 #name { font: inherit; margin: 0; }
 #name .banner {
   display: block; white-space: pre; overflow: hidden;
@@ -198,26 +226,39 @@ p { margin: 0 0 16px; }
 }
 #name .banner > span { display: block; }
 
+/* the hero, below the banner: the tagline, the last login, then fig. 1's commands */
 .session { margin-bottom: 18px; }
 .tty .lede { font: inherit; color: var(--ink); max-width: none; margin-bottom: 1.5em; }
+/* fig. 1's commands: six lines of screen, newest at the bottom once it fills; what scrolls off
+   the top fades out */
 .session .term { height: 9em; overflow: hidden; }
 .session .term.scrolled { -webkit-mask-image: linear-gradient(transparent, #000 2.5em); mask-image: linear-gradient(transparent, #000 2.5em); }
 .session .term .old { opacity: 0.55; }
 .hero .hint, .hero .fig-note { transition: opacity 0.5s; }
 .hero.boot .hint, .hero.boot .fig-note { opacity: 0; }
 
+/* each later section's prompt: its heading, stuck at the top of the screen for as long as the
+   section is in view (the next one's pushes it out), on the page colour, with what scrolls
+   under it fading out below. It sits just clear of the banner's fade, its colour filling the gap
+   up to the banner, and it slides under the banner, not over, when pushed out. Until the command
+   has run, the section's output is laid out but unseen. */
 .cmdline {
   position: sticky; top: calc(var(--motd) + 26px); z-index: 1;
   padding: 4px 0; margin: -4px 0 12px;
   background: var(--bg);
   box-shadow: -24px 0 0 var(--bg), 0 -26px 0 var(--bg), -24px -26px 0 var(--bg);
 }
+/* Reserve the prompt row while waiting, including its padding, without painting its backing. */
+.cmdline:empty { visibility: hidden; min-height: calc(1lh + 8px); }
+#about .panel:has(> .cmdline:empty) { background: transparent; box-shadow: none; }
 .cmdline::after {
   content: ""; position: absolute; left: -24px; right: 0; top: 100%; height: 14px;
   background: linear-gradient(var(--bg), transparent); pointer-events: none;
 }
 .fig-window { display: none; }
 .pending { opacity: 0; pointer-events: none; }
+/* a block's text as it streams in (session.js): the cursor on the next character, the rest
+   keeping its place */
 .tw-cur { background: var(--ink); color: var(--bg); }
 .tw-rest { visibility: hidden; }
 .lede { font-size: 17px; line-height: 1.55; max-width: 30em; }
@@ -252,12 +293,14 @@ p { margin: 0 0 16px; }
 .pubs .t { display: block; text-decoration: none; line-height: 1.45; }
 .pubs .m { display: block; color: var(--soft); font-size: 12px; margin-top: 4px; line-height: 1.5; }
 .pubs .c { color: var(--ink); white-space: nowrap; }
-.awards li { grid-template-columns: 4.6em 1fr; }
+.awards li { grid-template-columns: 4.6em 1fr; } /* room for a span of years */
 .awards span.t { color: var(--ink); }
 
+/* Astrophotography (imgcat.js): the file names in columns, as ls prints them, then the photo in
+   a fixed 3:2 frame; together they fit on a screen, so choosing photos needs no scrolling */
 .astro-list {
   list-style: none; margin: 0 0 12px; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(20ch, 1fr)); gap: 2px 1.5ch;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(20ch, 1fr)); gap: 2px 1.5ch; /* 20ch: the longest name */
   font-size: 13px; line-height: 1.4;
 }
 .astro-list button {
@@ -271,6 +314,7 @@ p { margin: 0 0 16px; }
 .imgcat .frame:hover, .imgcat .frame:focus-visible { outline: 1px dashed var(--accent); outline-offset: 4px; }
 .imgcat .cap { font-size: 12px; line-height: 1.45; color: var(--soft); margin: 6px 0 0; white-space: pre-wrap; }
 
+/* Contact: `mail supun` (mail.js). Plain terminal fields: a label, then a line to type on. */
 .mail { max-width: 34em; }
 .mail .intro { margin: 0 0 18px; color: var(--soft); }
 .mail .row { display: flex; align-items: baseline; gap: 1ch; margin: 0 0 6px; }
@@ -304,46 +348,64 @@ p { margin: 0 0 16px; }
 .projects p { color: var(--soft); margin: 4px 0 6px; font-size: 14px; }
 .projects .go { font-size: 12px; display: flex; gap: 16px; }
 
+
+/* ---- phones and narrow tablets: a minimal version. The opening plays as on wide screens, but
+   the banner and tagline then scroll away like the rest, and there is no hero scroll track
+   (fig. 1 plays by itself, once the login is over). Each section
+   is its prompt (which doubles as its heading), then, once the command has typed, its figure in
+   a clear slot and its text. */
 @media (max-width: 899px) {
   main { width: auto; margin: 0 16px; padding-top: calc(var(--nav-h) + 20px); }
   .nav { padding: 12px 16px; background: var(--bg); box-shadow: 0 1px 0 var(--rule); }
   .nav nav { gap: 12px; }
   .tty { font-size: 14px; }
   #term, #stageHint { display: none; }
-  .hero.boot + .fig-window { visibility: hidden; }
+  .hero.boot + .fig-window { visibility: hidden; } /* fig. 1 waits for the login */
   .motd { position: static; padding: 0 0 20px; }
   .motd::before { display: none; }
   section { min-height: 0; padding: 44px 0 0; }
   #top { height: auto; }
   #top .pin { position: static; height: auto; display: flex; flex-direction: column; padding: 0; }
   .panel, #top .panel { padding: 0; background: none; box-shadow: none; }
+  /* the hero: tagline, then fig. 1, then its note */
   #top .hero { display: contents; }
   #top .session { order: 0; margin: 0 0 8px; }
   #top .fig-window { order: 1; height: min(56vh, 104vw); margin: 0 -16px; }
   #top .fig-note { order: 2; margin: 4px 0 0; }
-  .fig-window { display: block; position: relative; overflow: hidden; height: min(46vh, 88vw); margin: 0 -16px 20px; touch-action: pan-y; }
+  /* each figure gets a clear slot, edge to edge: main.js moves the scene (and its caption) into
+     the one most on screen, so it scrolls with the page. Current work has none, as its figure
+     would repeat fig. 1. */
+  .fig-window { display: block; position: relative; overflow: hidden; height: min(46vh, 88vw); margin: 0 -16px 20px; touch-action: pan-y; } /* sideways drags rotate the figure */
+  /* the figure above, the caption in a strip of its own at the foot (CAPTION_STRIP in main.js) */
   .fig-window > #scene { position: absolute; inset: 0 0 20px 0; }
   .fig-window > #caption { position: absolute; left: 16px; right: 16px; bottom: 3px; text-align: center; font-size: 10px; }
   #work .fig-window, #awards .fig-window, #contact .fig-window, #astro .fig-window { display: none; }
-  .nav nav { font-size: 12px; }
-  .imgcat .frame { aspect-ratio: 3 / 2; }
+  .nav nav { font-size: 12px; } /* six links across a phone */
+  .imgcat .frame { aspect-ratio: 3 / 2; } /* taller on a phone, where the list is narrower */
+  /* iOS zooms into a field whose text is under 16px when it is tapped; at 16px it does not
+     (and pinch zoom stays available) */
   .mail { font-size: 16px; }
+  /* the last section is a screen tall, so its prompt can reach the top like the others */
   #contact { min-height: calc(100vh - var(--motd)); min-height: calc(100svh - var(--motd)); }
-  .cmdline { top: var(--motd); font-size: 15px; box-shadow: -16px 0 0 var(--bg), 16px 0 0 var(--bg); }
+  /* the prompt is the heading: the h2 stays for screen readers only */
+  .cmdline { top: var(--motd); font-size: 15px; box-shadow: -16px 0 0 var(--bg), 16px 0 0 var(--bg); } /* right under the nav: no fade there */
   .cmdline::after { left: -16px; right: -16px; }
   .cmdline .cmd { font-weight: 700; }
   .panel > h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .spot .tag { display: none; }
+  /* a section's figure note goes right under its figure */
   .panel { display: flex; flex-direction: column; }
   .panel > .cmdline { order: -2; }
   .panel > .fig-window, .panel > .fig-note { order: -1; }
   .panel > .fig-note { margin: -8px 0 22px; }
+  /* lists: the year above the title, so titles get the full width */
   .pubs li { display: block; padding: 14px 0; }
   .pubs .y { display: block; font-size: 12px; padding: 0; margin-bottom: 2px; }
   .pubs .t { font-size: 15px; }
   .projects .head { flex-direction: column; gap: 0; }
   .theme { margin-bottom: 22px; }
 }
+/* Too short to pin the panel: let it scroll; the scene still follows the scroll. */
 @media (max-height: 520px) {
   .motd { position: static; }
   #top .pin { position: static; height: auto; padding: 0 0 96px; }
@@ -369,4 +431,18 @@ p { margin: 0 0 16px; }
   .motd { position: static; }
   .pending { opacity: 1; }
   #name .sr-only { position: static; width: auto; height: auto; overflow: visible; clip-path: none; white-space: normal; }
+}
+
+/* The optional About-first opening uses the same terminal styling. */
+.about-first .nav nav { flex-wrap: wrap; }
+.about-first #imgcat { margin-bottom: 24px; }
+@media (max-width: 899px) {
+  main { --figure-height: min(35svh, 78vw); }
+  #mobileFigure {
+    position: sticky; top: var(--nav-h); z-index: 2;
+    height: var(--figure-height); background: var(--bg);
+  }
+  section { scroll-margin-top: calc(var(--nav-h) + var(--figure-height)); }
+  .cmdline { top: calc(var(--nav-h) + var(--figure-height)); }
+  .about-first #about { padding-top: 12px; }
 }

@@ -1,11 +1,31 @@
+// The page as a terminal session.
+//
+// playSession: the opening. The visitor's ssh command is typed out, the connection takes a
+// moment, then the server's welcome message prints (the name as a banner, row by row, and the
+// tagline), followed by the last-login line. Then onDone hands the terminal on (to fig. 1's
+// commands, in main.js). Any scroll, key, click or touch skips to the end, and so does reduced
+// motion or a page opened part-way down.
+//
+// typeOnArrival: every later section opens with a prompt. As it comes into view its command is
+// typed, then the section prints below as the command's output (its figure too, on phones),
+// block by block, top to bottom as they sit on screen. Each block's text streams in fast behind
+// a cursor, in uneven chunks with the odd stall, as a program's output does. (The prompt line is
+// the section's sticky heading, see style.css, so scrolling fast does not carry it away.)
+//
+// Either way, everything is laid out from the start and only hidden, so nothing on the page
+// moves while it plays.
+
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const NBSP = ' ';
 const cursor = (ch, blink) => `<span class="cur${blink ? ' blink' : ''}">${esc(ch || NBSP)}</span>`;
+// text with its first n characters shown; the rest keeps its place but is hidden, with the
+// cursor (if any) on the next character, as a block cursor in a terminal sits
 function part(text, n, cur, blink = false) {
   if (n >= text.length && !cur) return esc(text);
   return esc(text.slice(0, n)) + (cur ? cursor(text[n], blink) : '') +
     `<span class="hide">${esc(text.slice(cur ? n + 1 : n))}</span>`;
 }
+// the date as `last` prints it: "Sat Nov 14 21:04:12 2026"
 function ctime(d) {
   const p = (v) => String(v).padStart(2, '0');
   const f = (o) => d.toLocaleString('en-US', o);
@@ -13,9 +33,10 @@ function ctime(d) {
     `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())} ${d.getFullYear()}`;
 }
 
-export function playSession({ hero, ssh, gap, rows, line, last, local, command, tagline, still, onDone }) {
+export function playSession({ hero, ssh, gap, rows, line, last, local, command, tagline, still, onCommand, onDone }) {
   const sshHTML = (n, cur, blink) => `<span class="ps">${esc(local)}</span> <span class="cmd">${part(command, n, cur, blink)}</span>`;
 
+  // the starting state: a prompt with a blinking cursor, everything else laid out but hidden
   hero.classList.add('boot');
   ssh.innerHTML = sshHTML(0, true, true);
   gap.innerHTML = '';
@@ -24,18 +45,21 @@ export function playSession({ hero, ssh, gap, rows, line, last, local, command, 
   last.textContent = `Last login: ${ctime(new Date(Date.now() - (3 + 20 * Math.random()) * 3600e3))}`;
   last.classList.add('hide');
 
+  // keystrokes at an uneven pace, a little slower after a space
   const keys = [];
   let at = 0;
   for (const ch of command) keys.push((at += 38 + 52 * Math.random() + (ch === ' ' ? 70 : 0)));
 
+  // the timeline: each step gets the time since it began (Infinity: draw its end state)
   const steps = [];
   let T = 0;
   const step = (dur, draw) => { steps.push({ start: T, end: T + dur, draw }); T += dur; };
-  const ROW = 30, CHAR = 7;
-  step(450, () => {});
+  const ROW = 30, CHAR = 7; // ms per banner row, per tagline character
+  step(450, () => {}); // the prompt waits
   step(at, (t) => { ssh.innerHTML = sshHTML(keys.filter((k) => k <= t).length, true); });
-  step(240, () => { ssh.innerHTML = sshHTML(command.length, true); });
-  step(520, () => { ssh.innerHTML = sshHTML(command.length, false); gap.innerHTML = cursor('', true); });
+  step(240, () => { ssh.innerHTML = sshHTML(command.length, true); }); // then Enter
+  step(0, () => onCommand?.()); // Enter submits ssh, including when the timeline is skipped
+  step(520, () => { ssh.innerHTML = sshHTML(command.length, false); gap.innerHTML = cursor('', true); }); // connecting
   step(rows.length * ROW, (t) => {
     gap.innerHTML = '';
     const k = Math.min(rows.length, Math.floor(t / ROW) + 1);
@@ -47,7 +71,7 @@ export function playSession({ hero, ssh, gap, rows, line, last, local, command, 
   });
   step(170, () => { line.textContent = tagline; });
   step(110, () => { last.classList.remove('hide'); });
-  step(120, () => {});
+  step(120, () => {}); // a beat before the prompt
 
   let i = 0, t0 = 0, raf = 0, done = false;
   const SKIP = ['wheel', 'touchstart', 'keydown', 'pointerdown', 'scroll'];
@@ -73,6 +97,9 @@ export function playSession({ hero, ssh, gap, rows, line, last, local, command, 
   raf = requestAnimationFrame(tick);
 }
 
+// ---- streaming a block's text. Each text node becomes: what has printed, the cursor on the next
+// character, and the rest (laid out, hidden), so the block keeps its shape; unwrap puts the
+// original nodes back, links and all.
 function wrapText(el) {
   const nodes = [], walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
   while (walk.nextNode()) nodes.push(walk.currentNode);
@@ -86,7 +113,7 @@ function wrapText(el) {
   });
 }
 function showChars(parts, n) {
-  let left = n;
+  let left = n; // characters still to show, from this node on
   for (const p of parts) {
     const k = Math.max(0, Math.min(p.s.length, left)), here = left >= 0 && left < p.s.length;
     p.done.data = p.s.slice(0, k);
@@ -98,13 +125,17 @@ function showChars(parts, n) {
 function unwrap(parts) {
   for (const p of parts) { p.done.replaceWith(p.t); p.cur.remove(); p.rest.remove(); }
 }
-const RATE = 1.6, CAP = 2400;
+// When each block starts and how its text comes: chunks of 20-90 characters at RATE, now and then
+// a stall inside a block, often a pause between blocks; a long section is sped up to fit CAP.
+const RATE = 1.6, CAP = 2400; // characters per ms; ms for a whole section
+// the text a block streams: none for a figure's window (on phones it holds the scene, whose
+// characters are the figure's, not text)
 const textOf = (u) => (u.classList.contains('fig-window') ? '' : u.textContent);
 function schedule(blocks) {
   const plan = [];
   let T = 0;
   for (const u of blocks) {
-    const len = textOf(u).length, pts = [[T, 0]];
+    const len = textOf(u).length, pts = [[T, 0]]; // (time, characters shown)
     for (let c = 0; c < len; ) {
       const n = Math.min(len - c, 20 + Math.floor(70 * Math.random()));
       T += n / RATE;
@@ -126,11 +157,15 @@ function charsAt(pts, t) {
 }
 
 export function typeOnArrival({ items, prompt, still, onShow = () => {} }) {
+  // onShow(el): told as each block prints (main.js assembles a figure when its window does)
+  // items: [{ key, section, line, command }]; line is the section's prompt line
   const PS = `<span class="ps">${esc(prompt)}</span> `;
   const draw = (it, n, cur) => { it.line.innerHTML = PS + `<span class="cmd">${part(it.command, n, cur, cur && n === 0)}</span>`; };
+  // what prints: the blocks of the section, with lists (and the featured piece) a block per
+  // entry, in the order they sit on screen (phones move a figure's note up under the figure)
   const units = (it) => [...it.line.parentElement.children].flatMap((c) =>
     c === it.line || c.classList.contains('sr-only') ? [] : c.matches('ol, ul, article, #themes') ? [...c.children] : [c]);
-  const inOrder = (els) => els.filter((el) => el.getClientRects().length)
+  const inOrder = (els) => els.filter((el) => el.getClientRects().length) // laid out (not display: none)
     .map((el) => [el.getBoundingClientRect().top, el]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
   const finish = (it) => {
     cancelAnimationFrame(it.raf);
@@ -145,8 +180,8 @@ export function typeOnArrival({ items, prompt, still, onShow = () => {} }) {
     const keys = [];
     let at = 0;
     for (const ch of it.command) keys.push((at += fast ? 16 : 38 + 52 * Math.random() + (ch === ' ' ? 60 : 0)));
-    const out = inOrder(units(it).filter((u) => u.classList.contains('pending')));
-    const startOut = at + (fast ? 60 : 200);
+    const out = inOrder(units(it).filter((u) => u.classList.contains('pending'))); // what is still to print
+    const startOut = at + (fast ? 60 : 200); // Enter, then the output
     const { plan, total } = schedule(out);
     let t0 = 0, typed = -1, b = -1, shownChars = -1;
     const tick = (now) => {
@@ -158,6 +193,7 @@ export function typeOnArrival({ items, prompt, still, onShow = () => {} }) {
       } else {
         if (typed <= it.command.length) { draw(it, it.command.length, false); typed = Infinity; }
         const to = t - startOut;
+        // start each block whose time has come (the one before it is then complete)
         while (b + 1 < plan.length && to >= plan[b + 1].start) {
           if (it.parts) unwrap(it.parts);
           const u = plan[++b].u;
@@ -174,28 +210,40 @@ export function typeOnArrival({ items, prompt, still, onShow = () => {} }) {
     };
     it.raf = requestAnimationFrame(tick);
   };
+  // listsOnly: hide just the list entries (a new command in a section that has printed: its
+  // figure and the rest stay, and the figure changes with its usual morph)
   const reset = (it, listsOnly = false) => {
     cancelAnimationFrame(it.raf);
     it.state = 'waiting';
-    draw(it, 0, true);
+    it.line.replaceChildren();
     for (const u of units(it)) if (!listsOnly || u.parentElement.matches('ol, ul')) u.classList.add('pending');
   };
 
   for (const it of items) {
     reset(it);
+    // keyboard users tabbing into a section that has not printed yet get it at once
     it.section.addEventListener('focusin', () => { if (it.state !== 'done') finish(it); });
   }
-  if (still) items.forEach(finish);
+  // A section plays once any of it is in the top 70% of the screen: scrolling down, when its
+  // prompt gets there; scrolling up (a page opened part-way down), as soon as it shows.
   const io = new IntersectionObserver((entries) => {
-    for (const en of entries) if (en.isIntersecting) play(items.find((it) => it.section === en.target));
+    for (const en of entries) if (en.isIntersecting) {
+      io.unobserve(en.target);
+      const it = items.find((it) => it.section === en.target);
+      if (still) finish(it);
+      else play(it);
+    }
   }, { rootMargin: '0px 0px -30% 0px' });
-  for (const it of items) io.observe(it.section);
 
+  // Run a new command in a section that has printed (a Papers tab): type it fast, print its list again.
   return {
+    observeArrivals() {
+      for (const it of items) io.observe(it.section);
+    },
     retype(key, command) {
       const it = items.find((x) => x.key === key);
       if (!it) return;
-      if (it.state === 'playing') finish(it);
+      if (it.state === 'playing') finish(it); // complete what was printing, then print the new list
       const was = it.state;
       it.command = command;
       reset(it, was !== 'waiting');
