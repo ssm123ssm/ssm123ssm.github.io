@@ -2,20 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>
-  const previewUrl = new URL(location.href);
-  if (previewUrl.searchParams.get('layout') === 'about') {
-    previewUrl.pathname = new URL('about-first.html', previewUrl).pathname;
-    previewUrl.searchParams.delete('layout');
-    location.replace(previewUrl);
-  }
-</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Supun Manathunga · Bayesian methods for infectious disease epidemiology</title>
 <meta name="description" content="Supun Manathunga, PhD candidate in Experimental Medicine at McGill University: Bayesian methods, sequential Monte Carlo, particle filters and machine learning for infectious disease epidemiology.">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#173a6a">
-<link rel="canonical" href="https://ssm123ssm.github.io/">
+<link rel="canonical" href="https://supun.is-a.dev/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -24,8 +16,8 @@
 <meta property="og:site_name" content="Supun Manathunga">
 <meta property="og:title" content="Supun Manathunga">
 <meta property="og:description" content="PhD candidate at McGill: Bayesian methods, sequential Monte Carlo and machine learning for infectious disease epidemiology.">
-<meta property="og:url" content="https://ssm123ssm.github.io/">
-<meta property="og:image" content="https://ssm123ssm.github.io/assets/og.jpg">
+<meta property="og:url" content="https://supun.is-a.dev/">
+<meta property="og:image" content="https://supun.is-a.dev/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="The About section: the name as a terminal banner and a short bio, beside an ASCII telescope under the night sky">
@@ -34,22 +26,23 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Supun Manathunga">
 <meta name="twitter:description" content="PhD candidate at McGill: Bayesian methods, sequential Monte Carlo and machine learning for infectious disease epidemiology.">
-<meta name="twitter:image" content="https://ssm123ssm.github.io/assets/og.jpg">
+<meta name="twitter:image" content="https://supun.is-a.dev/assets/og.jpg">
 <!-- who this is, for search engines (schema.org) -->
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Person", "name": "Supun Manathunga", "url": "https://ssm123ssm.github.io/", "jobTitle": "PhD candidate in Experimental Medicine", "affiliation": {"@type": "CollegeOrUniversity", "name": "McGill University", "url": "https://www.mcgill.ca/"}, "memberOf": {"@type": "Organization", "name": "D3MOD lab", "url": "https://mchi.mcgill.ca/#/labs/d3mod"}, "alumniOf": {"@type": "CollegeOrUniversity", "name": "University of Peradeniya"}, "knowsAbout": ["Bayesian statistics", "Sequential Monte Carlo", "Particle filters", "Infectious disease epidemiology", "Adaptive sampling", "Machine learning"], "sameAs": ["https://scholar.google.com/citations?user=oewW6r4AAAAJ", "https://github.com/ssm123ssm", "https://codepen.io/ssm123ssm"]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Person", "name": "Supun Manathunga", "url": "https://supun.is-a.dev/", "jobTitle": "PhD candidate in Experimental Medicine", "affiliation": {"@type": "CollegeOrUniversity", "name": "McGill University", "url": "https://www.mcgill.ca/"}, "memberOf": {"@type": "Organization", "name": "D3MOD lab", "url": "https://mchi.mcgill.ca/#/labs/d3mod"}, "alumniOf": {"@type": "CollegeOrUniversity", "name": "University of Peradeniya"}, "knowsAbout": ["Bayesian statistics", "Sequential Monte Carlo", "Particle filters", "Infectious disease epidemiology", "Adaptive sampling", "Machine learning"], "sameAs": ["https://scholar.google.com/citations?user=oewW6r4AAAAJ", "https://github.com/ssm123ssm", "https://codepen.io/ssm123ssm"]}</script>
 <link rel="preload" href="assets/fonts/courier-prime-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="about-first night">
 <div id="scene" aria-hidden="true"><pre></pre><pre></pre><pre></pre><pre></pre><pre></pre><pre></pre><pre></pre><pre></pre><pre></pre></div>
 
 <header class="nav">
   <nav aria-label="Sections">
+    <a href="#about">About</a>
+    <a href="#astro">Astro</a>
     <a href="#research">Research</a>
     <a href="#papers">Papers</a>
     <a href="#projects">Projects</a>
     <a href="#awards">Awards</a>
-    <a href="#about">About</a>
     <a href="#contact">Contact</a>
   </nav>
 </header>
@@ -61,15 +54,51 @@
   <p class="tty gap" id="sshGap" aria-hidden="true"></p>
   <div class="tty motd" id="motd"><h1 id="name"><span class="sr-only">Supun Manathunga</span><span class="banner" aria-hidden="true" style="--cols:84"><span> ____    __  __  ____    __  __  __  __</span><span>/\  _`\ /\ \/\ \/\  _`\ /\ \/\ \/\ \/\ \</span><span>\ \,\L\_\ \ \ \ \ \ \L\ \ \ \ \ \ \ `\\ \</span><span> \/_\__ \\ \ \ \ \ \ ,__/\ \ \ \ \ \ , ` \</span><span>   /\ \L\ \ \ \_\ \ \ \/  \ \ \_\ \ \ \`\ \</span><span>   \ `\____\ \_____\ \_\   \ \_____\ \_\ \_\</span><span>    \/_____/\/_____/\/_/    \/_____/\/_/\/_/</span><span>         ______  __  __  ______  ______  __  __  __  __  __  __  ____    ______</span><span> /'\_/`\/\  _  \/\ \/\ \/\  _  \/\__  _\/\ \/\ \/\ \/\ \/\ \/\ \/\  _`\ /\  _  \</span><span>/\      \ \ \L\ \ \ `\\ \ \ \L\ \/_/\ \/\ \ \_\ \ \ \ \ \ \ `\\ \ \ \L\_\ \ \L\ \</span><span>\ \ \__\ \ \  __ \ \ , ` \ \  __ \ \ \ \ \ \  _  \ \ \ \ \ \ , ` \ \ \L_L\ \  __ \</span><span> \ \ \_/\ \ \ \/\ \ \ \`\ \ \ \/\ \ \ \ \ \ \ \ \ \ \ \_\ \ \ \`\ \ \ \/, \ \ \/\ \</span><span>  \ \_\\ \_\ \_\ \_\ \_\ \_\ \_\ \_\ \ \_\ \ \_\ \_\ \_____\ \_\ \_\ \____/\ \_\ \_\</span><span>   \/_/ \/_/\/_/\/_/\/_/\/_/\/_/\/_/  \/_/  \/_/\/_/\/_____/\/_/\/_/\/___/  \/_/\/_/</span></span></h1></div>
 
-  <!-- A tall scroll track: the panel stays pinned while scrolling through it drives the particle filter. -->
+  <div class="tty session">
+    <p class="lede" id="line">Bayesian methods, sequential Monte Carlo and machine learning for infectious disease epidemiology.</p>
+    <p class="ln" id="lastLogin" aria-hidden="true"></p>
+  </div>
+
   <div class="fig-window" id="mobileFigure" aria-hidden="true"></div>
+
+  <section id="about" data-scene="4">
+    <div class="panel">
+      <p class="tty ln cmdline" data-cmd="about" aria-hidden="true"></p>
+      <h2>About</h2>
+      <p id="aboutText">I am a PhD candidate in Experimental Medicine at McGill University, in the <a href="https://mchi.mcgill.ca/#/labs/d3mod" target="_blank" rel="noopener">D3MOD lab</a>. My research interests are Bayesian methods, sequential Monte Carlo and machine learning for infectious disease epidemiology.</p>
+      <p id="background">I obtained my MBBS from the Faculty of Medicine, University of Peradeniya, and worked as a medical doctor in both the curative and preventive health sectors. I then joined the University of Peradeniya as a lecturer, before coming to McGill for my PhD.</p>
+      <p id="hobby">Outside research, I <a href="#astro">photograph the night sky</a>: nebulae, galaxies, comets and the Moon.</p>
+      <p class="links" id="links2"><a href="assets/Supun-Manathunga-CV.pdf" target="_blank" rel="noopener">CV (PDF)</a><a href="https://scholar.google.com/citations?user=oewW6r4AAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a><a href="https://github.com/ssm123ssm" target="_blank" rel="noopener">GitHub</a><a href="https://mchi.mcgill.ca/#/labs/d3mod" target="_blank" rel="noopener">D3MOD lab</a></p>
+    </div>
+  </section>
+
+  <section id="astro" data-scene="4">
+    <div class="panel">
+      <p class="tty ln cmdline" data-cmd="astro" aria-hidden="true"></p>
+      <h2>Astrophotography</h2>
+      <div class="imgcat" id="imgcat">
+        <p class="tty ln" aria-hidden="true"></p>
+        <a class="frame" target="_blank" rel="noopener"><canvas aria-hidden="true"></canvas></a>
+        <p class="cap" aria-live="polite"></p>
+      </div>
+      <ul class="astro-list" id="astroList" aria-label="Photographs"><li><button type="button" data-file="moon-hdr.jpg" title="Moon, HDR, 2023">moon-hdr.jpg</button></li><li><button type="button" data-file="carina-nebula.jpg" title="Carina Nebula, 2023">carina-nebula.jpg</button></li><li><button type="button" data-file="comet-atlas.jpg" title="Comet ATLAS, 2024">comet-atlas.jpg</button></li><li><button type="button" data-file="conjunction.jpg" title="Planetary conjunction at dusk, 2023">conjunction.jpg</button></li><li><button type="button" data-file="full-moon.jpg" title="Full Moon, 2023">full-moon.jpg</button></li><li><button type="button" data-file="horsehead-flame.jpeg" title="Horsehead and Flame nebulae, 2023">horsehead-flame.jpeg</button></li><li><button type="button" data-file="leo-triplet.jpg" title="Leo Triplet, 2023">leo-triplet.jpg</button></li><li><button type="button" data-file="pleiades.jpg" title="Pleiades (M45), 2022">pleiades.jpg</button></li><li><button type="button" data-file="milky-way.jpg" title="Milky Way, 2023">milky-way.jpg</button></li><li><button type="button" data-file="orion-nebula.jpg" title="Orion Nebula, 2023">orion-nebula.jpg</button></li><li><button type="button" data-file="orion-sword.jpg" title="Orion's sword, 2023">orion-sword.jpg</button></li><li><button type="button" data-file="orion-belt.jpg" title="Orion's belt and sword, 2023">orion-belt.jpg</button></li><li><button type="button" data-file="gibbous-moon.jpg" title="Waning gibbous Moon, 2024">gibbous-moon.jpg</button></li></ul>
+    </div>
+  </section>
+
+  <section id="research" data-scene="1">
+    <div class="panel">
+      <p class="tty ln cmdline" data-cmd="research" aria-hidden="true"></p>
+      <h2>Research</h2>
+      <div id="themes"><div class="theme"><h3>Epidemic modelling and surveillance</h3><p class="fields">Adaptive sampling / Particle filters / State-space models for infectious disease</p><p>State-space models of infectious disease, fitted with particle filters as surveillance data arrive, and adaptive sampling that uses the model's forecast to set the size of the next round. Earlier work on transmission estimates and outbreak simulation.</p></div><div class="theme"><h3>Bayesian methods</h3><p class="fields">Sequential Monte Carlo / Bayesian assurance / Bayesian meta-analysis</p><p>Sequential Monte Carlo for models that are refitted as data accumulate, and Bayesian assurance for choosing sample sizes, both before a study and round by round during one. Bayesian meta-analysis to pool published clinical evidence.</p></div></div>
+      <p class="fig-note" id="sirNote"><span class="fig-text">This is a live stochastic SIR epidemic on a 120 x 120 grid: each day an infected person infects each neighbour with probability 0.1, rarely someone far away, and recovers with probability 0.15. Tap the grid to start an epidemic there.</span> <a href="js/sir.js" target="_blank" rel="noopener">SIR model code</a></p>
+    </div>
+  </section>
 
   <section id="top" data-scene="0">
     <div class="pin">
       <div class="panel hero">
         <div class="tty session">
-          <p class="lede" id="line">Bayesian methods, sequential Monte Carlo and machine learning for infectious disease epidemiology.</p>
-          <p class="ln" id="lastLogin" aria-hidden="true"></p>
+          <h2>Particle filter</h2>
           <!-- fig. 1's commands, run by scrolling: a fixed-height screen that scrolls like a terminal -->
           <div class="term" id="term" aria-hidden="true"></div>
         </div>
@@ -84,15 +113,6 @@
     <div class="panel">
       <p class="tty ln cmdline" data-cmd="work" aria-hidden="true"></p>
       <article class="spot" id="spot"><p class="tag">Current work</p><h2 class="spot-title">A model-based adaptive sampling framework for infectious disease surveillance</h2><p class="m">S Manathunga, N Osgood, SF O'Brien, DL Buckeridge, WA Russell<br>arXiv:2611.01199, 2026</p><p class="prize"><span class="mark" aria-hidden="true">*</span><a href="https://smdm.org/lee-b-lusted-student-prize-competition/" target="_blank" rel="noopener">Lee B. Lusted Student Prize, SMDM 2026</a><br><span class="m">Quantitative Methods and Theoretical Developments, for the poster &quot;Using a stochastic epidemic model to guide efficient seroprevalence sampling decisions&quot;.</span></p><p>How many samples does the next surveillance round really need? A particle filter keeps a state-space epidemic model up to date as data arrive. Its one-step-ahead prediction feeds a Bayesian assurance criterion, which picks the cheapest design likely to reach a target credible-interval width. Tested in simulation and on SARS-CoV-2 serosurveillance of Canadian blood donors.</p><p class="links"><a href="https://arxiv.org/abs/2611.01199" target="_blank" rel="noopener">Paper</a><a href="https://github.com/ssm123ssm/Adaptive_sampling_public" target="_blank" rel="noopener">Code</a><a href="https://ssm123ssm.github.io/adaptive-sampling/" target="_blank" rel="noopener">Poster supplement</a></p></article>
-    </div>
-  </section>
-
-  <section id="research" data-scene="1">
-    <div class="panel">
-      <p class="tty ln cmdline" data-cmd="research" aria-hidden="true"></p>
-      <h2>Research</h2>
-      <div id="themes"><div class="theme"><h3>Epidemic modelling and surveillance</h3><p class="fields">Adaptive sampling / Particle filters / State-space models for infectious disease</p><p>State-space models of infectious disease, fitted with particle filters as surveillance data arrive, and adaptive sampling that uses the model's forecast to set the size of the next round. Earlier work on transmission estimates and outbreak simulation.</p></div><div class="theme"><h3>Bayesian methods</h3><p class="fields">Sequential Monte Carlo / Bayesian assurance / Bayesian meta-analysis</p><p>Sequential Monte Carlo for models that are refitted as data accumulate, and Bayesian assurance for choosing sample sizes, both before a study and round by round during one. Bayesian meta-analysis to pool published clinical evidence.</p></div></div>
-      <p class="fig-note" id="sirNote"><span class="fig-text">This is a live stochastic SIR epidemic on a 120 x 120 grid: each day an infected person infects each neighbour with probability 0.1, rarely someone far away, and recovers with probability 0.15. Tap the grid to start an epidemic there.</span> <a href="js/sir.js" target="_blank" rel="noopener">SIR model code</a></p>
     </div>
   </section>
 
@@ -113,7 +133,6 @@
     </div>
   </section>
 
-  <!-- shares fig. 4 with Projects (no figure of its own on phones) -->
   <section id="awards" data-scene="3">
     <div class="panel">
       <p class="tty ln cmdline" data-cmd="awards" aria-hidden="true"></p>
@@ -122,32 +141,6 @@
     </div>
   </section>
 
-  <section id="about" data-scene="4">
-    <div class="panel">
-      <p class="tty ln cmdline" data-cmd="about" aria-hidden="true"></p>
-      <h2>About</h2>
-      <p id="aboutText">I am a PhD candidate in Experimental Medicine at McGill University, in the <a href="https://mchi.mcgill.ca/#/labs/d3mod" target="_blank" rel="noopener">D3MOD lab</a>. My research interests are Bayesian methods, sequential Monte Carlo and machine learning for infectious disease epidemiology.</p>
-      <p id="background">I obtained my MBBS from the Faculty of Medicine, University of Peradeniya, and worked as a medical doctor in both the curative and preventive health sectors. I then joined the University of Peradeniya as a lecturer, before coming to McGill for my PhD.</p>
-      <p id="hobby">Outside research, I <a href="#astro">photograph the night sky</a>: nebulae, galaxies, comets and the Moon.</p>
-      <p class="links" id="links2"><a href="assets/Supun-Manathunga-CV.pdf" target="_blank" rel="noopener">CV (PDF)</a><a href="https://scholar.google.com/citations?user=oewW6r4AAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a><a href="https://github.com/ssm123ssm" target="_blank" rel="noopener">GitHub</a><a href="https://mchi.mcgill.ca/#/labs/d3mod" target="_blank" rel="noopener">D3MOD lab</a></p>
-    </div>
-  </section>
-
-  <!-- `ls -l ~/astro`, then `imgcat` (js/imgcat.js); shares fig. 5 with About -->
-  <section id="astro" data-scene="4">
-    <div class="panel">
-      <p class="tty ln cmdline" data-cmd="astro" aria-hidden="true"></p>
-      <h2>Astrophotography</h2>
-      <ul class="astro-list" id="astroList" aria-label="Photographs"><li><button type="button" data-file="moon-hdr.jpg" title="Moon, HDR, 2023">moon-hdr.jpg</button></li><li><button type="button" data-file="carina-nebula.jpg" title="Carina Nebula, 2023">carina-nebula.jpg</button></li><li><button type="button" data-file="comet-atlas.jpg" title="Comet ATLAS, 2024">comet-atlas.jpg</button></li><li><button type="button" data-file="conjunction.jpg" title="Planetary conjunction at dusk, 2023">conjunction.jpg</button></li><li><button type="button" data-file="full-moon.jpg" title="Full Moon, 2023">full-moon.jpg</button></li><li><button type="button" data-file="horsehead-flame.jpeg" title="Horsehead and Flame nebulae, 2023">horsehead-flame.jpeg</button></li><li><button type="button" data-file="leo-triplet.jpg" title="Leo Triplet, 2023">leo-triplet.jpg</button></li><li><button type="button" data-file="pleiades.jpg" title="Pleiades (M45), 2022">pleiades.jpg</button></li><li><button type="button" data-file="milky-way.jpg" title="Milky Way, 2023">milky-way.jpg</button></li><li><button type="button" data-file="orion-nebula.jpg" title="Orion Nebula, 2023">orion-nebula.jpg</button></li><li><button type="button" data-file="orion-sword.jpg" title="Orion's sword, 2023">orion-sword.jpg</button></li><li><button type="button" data-file="orion-belt.jpg" title="Orion's belt and sword, 2023">orion-belt.jpg</button></li><li><button type="button" data-file="gibbous-moon.jpg" title="Waning gibbous Moon, 2024">gibbous-moon.jpg</button></li></ul>
-      <div class="imgcat" id="imgcat">
-        <p class="tty ln" aria-hidden="true"></p>
-        <a class="frame" target="_blank" rel="noopener"><canvas aria-hidden="true"></canvas></a>
-        <p class="cap" aria-live="polite"></p>
-      </div>
-    </div>
-  </section>
-
-  <!-- `mail supun`: a terminal-style contact form (js/mail.js); shares fig. 5 with About -->
   <section id="contact" data-scene="4">
     <div class="panel">
       <p class="tty ln cmdline" data-cmd="contact" aria-hidden="true"></p>
